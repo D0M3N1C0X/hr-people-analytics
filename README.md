@@ -51,8 +51,9 @@ python3 src/run_all.py
 ```
 
 That regenerates the data, rebuilds the SQLite warehouse, runs the three analyses, writes
-13 charts and assembles [`reports/findings.md`](reports/findings.md). It takes a few seconds
-and needs **no packages installed** — Python 3.10 or newer and nothing else.
+13 charts and assembles [`reports/findings.md`](reports/findings.md) plus a self-contained
+[`reports/findings.html`](reports/findings.html) with every chart inlined. It takes a few
+seconds and needs **no packages installed** — Python 3.10 or newer and nothing else.
 
 ```bash
 python3 src/run_sql.py
@@ -75,11 +76,13 @@ runs the SQL layer against `data/hr.db` and prints the results as tables.
 │   ├── analysis_attrition.py     module 1
 │   ├── analysis_pay_gap.py       module 2
 │   ├── analysis_service_desk.py  module 3
+│   ├── build_report_html.py      findings.md -> one self-contained HTML file
 │   └── run_all.py                the whole pipeline, one command
 ├── sql/                          analysis queries: CTEs, window functions, cross-table joins
 ├── data/                         generated CSVs + data dictionary
 └── reports/
     ├── findings.md               the written report
+    ├── findings.html             the same report as one shareable file
     └── figures/                  13 SVG charts
 ```
 

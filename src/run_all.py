@@ -6,7 +6,7 @@ Run the whole pipeline with one command:
     1. regenerate the synthetic datasets      -> data/*.csv
     2. rebuild the SQLite warehouse           -> data/hr.db
     3. run the three analyses                 -> reports/figures/*.svg
-    4. assemble the findings report           -> reports/findings.md
+    4. assemble the findings report           -> reports/findings.md + .html
 
 Output is deterministic: same seed, same numbers, same charts, every time.
 """
@@ -22,6 +22,7 @@ import analysis_attrition
 import analysis_pay_gap
 import analysis_service_desk
 import build_db
+import build_report_html
 import generate_data
 from hrlib import ROOT, SNAPSHOT, WINDOW_START
 
@@ -101,6 +102,7 @@ def main() -> None:
     figures = sorted((ROOT / "reports" / "figures").glob("*.svg"))
     print(f"     reports/findings.md  ({REPORT.stat().st_size / 1024:.0f} KB)")
     print(f"     reports/figures/     ({len(figures)} charts)")
+    build_report_html.main()
     print("\nDone. Open reports/findings.md, or run `python3 src/run_sql.py` for the SQL layer.")
 
 
