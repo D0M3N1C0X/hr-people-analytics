@@ -168,7 +168,8 @@ def inline(text: str) -> str:
 def cell(text: str, align: str) -> str:
     klass = ' class="r"' if align == "r" else ""
     if "Above trigger" in text or "JOINT PAY" in text:
-        return f"<td{klass}><span class=\"pill flag\">{inline(text).replace('<strong>', '').replace('</strong>', '')}</span></td>"
+        plain = inline(text).replace("<strong>", "").replace("</strong>", "")
+        return f'<td{klass}><span class="pill flag">{plain}</span></td>'
     if "Within tolerance" in text:
         return f'<td{klass}><span class="pill ok">{inline(text)}</span></td>'
     return f"<td{klass}>{inline(text)}</td>"
@@ -187,8 +188,9 @@ def parse_table(rows: list[str]) -> str:
         cells = split(row)
         body.append("<tr>" + "".join(cell(c, aligns[i] if i < len(aligns) else "l")
                                      for i, c in enumerate(cells)) + "</tr>")
-    head = "".join(f'<th{" class=\"r\"" if aligns[i] == "r" else ""}>{inline(h)}</th>'
-                   for i, h in enumerate(headers))
+    head = "".join(
+        '<th{}>{}</th>'.format(' class="r"' if aligns[i] == "r" else "", inline(h))
+        for i, h in enumerate(headers))
     return ('<div class="table-wrap"><table><thead><tr>' + head + "</tr></thead><tbody>"
             + "".join(body) + "</tbody></table></div>")
 
@@ -310,12 +312,15 @@ def main() -> None:
         target = Path(args[0]) if args else REPORTS / "findings.fragment.html"
         target.write_text(content, encoding="utf-8")
     else:
+        # Split the head material (title + styles) from the page body, so the
+        # standalone file gets a proper document skeleton around it.
+        marker = '<div class="page">'
+        head, page = content.split(marker, 1)
         target = REPORTS / "findings.html"
         target.write_text('<!doctype html><html lang="en"><head><meta charset="utf-8">'
                           '<meta name="viewport" content="width=device-width,initial-scale=1">'
-                          f"{content.split('<div class=\"page\">')[0]}</head><body>"
-                          f'<div class="page">{content.split("<div class=\"page\">")[1]}'
-                          "</body></html>", encoding="utf-8")
+                          + head + "</head><body>" + marker + page + "</body></html>",
+                          encoding="utf-8")
 
     shown = target.relative_to(ROOT) if target.is_relative_to(ROOT) else target
     print(f"     {shown}  ({target.stat().st_size / 1024:.0f} KB)")
