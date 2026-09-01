@@ -160,8 +160,11 @@ def run() -> str:
         "![Case volume by month](figures/09_case_volume_trend.svg)",
         "",
         f"Attainment moves the opposite way: the correlation between monthly volume and SLA "
-        f"attainment is **r = {corr:.2f}**. Capacity is flat while demand is not, so the desk "
-        "misses its promise in the months when the questions matter most - pay, tax, contracts.",
+        f"attainment is **r = {corr:.2f}**. It falls to **{min(sla_by_month):.0f}%** in "
+        f"{MONTH_NAMES[sla_by_month.index(min(sla_by_month))]} against "
+        f"**{max(sla_by_month):.0f}%** in the quietest month. Capacity is flat while demand is "
+        "not, so the desk misses its promise in the months when the questions matter most - "
+        "pay, tax, contracts.",
         "",
         "![SLA attainment by month](figures/10_sla_by_month.svg)",
         "",
