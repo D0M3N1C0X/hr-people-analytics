@@ -209,6 +209,12 @@ def run() -> str:
                   ["Median salary, men", eur(median([e['base_salary_eur'] for e in men]))]],
                  align="lr"),
         "",
+        "*Scope: these are the Article 9 items this dataset can support, and they cover "
+        "**base pay only**. A real submission also has to report the gap in complementary "
+        "and variable components - bonus, allowances, benefits in kind - together with the "
+        "proportion of each gender receiving them. Those components are frequently where the "
+        "widest gaps sit, and they are not modelled here.*",
+        "",
         "![Median salary by country and gender](figures/05_pay_gap_by_country.svg)",
         "",
         "### Where the gap actually comes from",

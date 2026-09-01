@@ -5,7 +5,7 @@ is our pay defensible, and is the HR service actually working* — answered end 
 4,000-employee European organisation: data model, SQL warehouse, statistics, charts and a
 written report with recommendations.
 
-![pipeline](https://img.shields.io/badge/pipeline-one%20command-2563eb)
+[![pipeline](https://github.com/D0M3N1C0X/hr-people-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/D0M3N1C0X/hr-people-analytics/actions/workflows/ci.yml)
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![dependencies](https://img.shields.io/badge/dependencies-none-10b981)
 ![license](https://img.shields.io/badge/license-MIT-lightgrey)
@@ -24,7 +24,7 @@ written report with recommendations.
 |---|---|
 | **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.9% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio are 3.5x more likely to resign**, holding contract type, tenure, engagement and department constant. |
 | **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like** — 88% of the headline number is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** would cross the 5% trigger for a joint pay assessment under the EU Pay Transparency Directive. |
-| **SLA attainment is 76% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | A missed SLA costs **1.4 CSAT points**; a reopened case costs more — and reopened cases predict resignations nine months later. |
+| **SLA attainment is 76% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
 
 ![Voluntary turnover by department](reports/figures/01_turnover_by_department.svg)
 
@@ -190,5 +190,9 @@ generator, are in [`data/README.md`](data/README.md).
 
 Built by **Domenico Perroni** — HR Operations & Advisory, People Analytics. Kraków, Poland.
 [LinkedIn](https://www.linkedin.com/in/domenico-perroni-8780981b8)
+
+**Companion project:** [engagement-survey-analytics](https://github.com/D0M3N1C0X/engagement-survey-analytics)
+— an employee engagement survey analysed end to end, with an
+[interactive dashboard](https://d0m3n1c0x.github.io/engagement-survey-analytics/) you can filter in the browser.
 
 MIT licensed. Reuse anything here.
