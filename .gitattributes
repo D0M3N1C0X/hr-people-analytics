@@ -1,0 +1,7 @@
+# The HTML report is a build output of src/build_report_html.py, not source.
+# Marking it generated keeps the language bar honest (this is a Python and SQL
+# project) and collapses it in diffs.
+reports/findings.html linguist-generated=true
+
+# Generated datasets: keep them in the repo, out of the language stats.
+data/*.csv linguist-generated=true
