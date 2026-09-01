@@ -153,7 +153,7 @@ January 2026 carries **3,081** cases against **1,842** in August - **+67%**. Pay
 
 ![Case volume by month](figures/09_case_volume_trend.svg)
 
-Attainment moves the opposite way: the correlation between monthly volume and SLA attainment is **r = -0.91**. Capacity is flat while demand is not, so the desk misses its promise in the months when the questions matter most - pay, tax, contracts.
+Attainment moves the opposite way: the correlation between monthly volume and SLA attainment is **r = -0.91**. It falls to **53%** in January 2026 against **94%** in the quietest month. Capacity is flat while demand is not, so the desk misses its promise in the months when the questions matter most - pay, tax, contracts.
 
 ![SLA attainment by month](figures/10_sla_by_month.svg)
 
