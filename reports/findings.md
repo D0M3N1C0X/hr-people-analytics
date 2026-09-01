@@ -80,6 +80,8 @@ Population: **3,443 active employees**, 50% women / 50% men. At this size the or
 | Median salary, women | EUR 33,450 |
 | Median salary, men | EUR 39,150 |
 
+*Scope: these are the Article 9 items this dataset can support, and they cover **base pay only**. A real submission also has to report the gap in complementary and variable components - bonus, allowances, benefits in kind - together with the proportion of each gender receiving them. Those components are frequently where the widest gaps sit, and they are not modelled here.*
+
 ![Median salary by country and gender](figures/05_pay_gap_by_country.svg)
 
 ### Where the gap actually comes from
@@ -169,7 +171,7 @@ Employee Relations is the weakest category at **57%** attainment. Categories wit
 
 ![CSAT drivers](figures/13_csat_drivers.svg)
 
-A missed SLA costs **1.43 CSAT points** (4.52 against 3.09). A reopened case costs more: **1.49 points**. Speed matters, but getting it right the first time matters more - and Module 1 showed the same reopened cases predicting exits nine months later.
+Missing the SLA costs **1.43 CSAT points** (4.52 against 3.09); having to reopen a case costs **1.49** (4.56 against 3.07). Those two penalties are measured against different baselines and they overlap heavily - a breached case is far more likely to be reopened - so they cannot be added up. What can be said is where the floor is: cases that both missed SLA **and** were reopened average **2.27**, against **4.69** for a clean resolution. And Module 1 showed the same reopened cases predicting exits nine months later.
 
 Cases handled by agents with less than six months' tenure resolve first contact 36% of the time against 60% for experienced agents. Ramp-up is a quality variable and belongs in the capacity plan.
 

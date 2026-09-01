@@ -106,6 +106,11 @@ def run() -> str:
         "New agent (<6 m)": [c for c in scored if c["agent_tenure_months"] < 6],
         "Experienced agent": [c for c in scored if c["agent_tenure_months"] >= 6],
     }
+    # The two failure modes overlap, so the honest comparison is the joint case
+    # against a clean one - not one penalty stacked on the other.
+    both_failures = [c for c in scored if not c["sla_met"] and c["reopened"]]
+    clean_cases = [c for c in scored if c["sla_met"] and not c["reopened"]]
+
     viz.bar_chart(
         FIGURES / "13_csat_drivers.svg",
         list(csat_groups), [csat_of(g) for g in csat_groups.values()],
@@ -179,12 +184,17 @@ def run() -> str:
         "",
         "![CSAT drivers](figures/13_csat_drivers.svg)",
         "",
-        f"A missed SLA costs **{csat_of(csat_groups['SLA met']) - csat_of(csat_groups['SLA missed']):.2f} "
+        f"Missing the SLA costs **{csat_of(csat_groups['SLA met']) - csat_of(csat_groups['SLA missed']):.2f} "
         f"CSAT points** ({csat_of(csat_groups['SLA met']):.2f} against "
-        f"{csat_of(csat_groups['SLA missed']):.2f}). A reopened case costs more: "
-        f"**{csat_of(csat_groups['Solved first contact']) - csat_of(csat_groups['Reopened']):.2f} "
-        "points**. Speed matters, but getting it right the first time matters more - and "
-        "Module 1 showed the same reopened cases predicting exits nine months later.",
+        f"{csat_of(csat_groups['SLA missed']):.2f}); having to reopen a case costs "
+        f"**{csat_of(csat_groups['Solved first contact']) - csat_of(csat_groups['Reopened']):.2f}** "
+        f"({csat_of(csat_groups['Solved first contact']):.2f} against "
+        f"{csat_of(csat_groups['Reopened']):.2f}). Those two penalties are measured against "
+        "different baselines and they overlap heavily - a breached case is far more likely to "
+        f"be reopened - so they cannot be added up. What can be said is where the floor is: "
+        f"cases that both missed SLA **and** were reopened average **{csat_of(both_failures):.2f}**, "
+        f"against **{csat_of(clean_cases):.2f}** for a clean resolution. And Module 1 showed the "
+        "same reopened cases predicting exits nine months later.",
         "",
         f"Cases handled by agents with less than six months' tenure resolve first contact "
         f"{share([c['first_contact_resolution'] for c in new_agent]) * 100:.0f}% of the time "
