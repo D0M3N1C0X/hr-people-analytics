@@ -69,7 +69,7 @@ At **30% of annual base salary** per replacement - the mid-point of the 20-40% r
 
 ## 2. Pay equity under the EU Pay Transparency Directive
 
-Population: **3,443 active employees**, 50% women / 50% men. At this size the organisation reports **annually from 7 June 2027 on 2026 pay data** - the window analysed here. Gaps are expressed with men as the reference, as in the Directive.
+Population: **3,443 active employees**, 50% women / 50% men. At this size - 250 workers or more - the organisation reports **by 7 June 2027 and every year thereafter** (Art. 9(2)), on the preceding calendar year. What follows is computed on a **snapshot of active employees at 30 June 2026**, which is the shape of the exercise rather than a statutory submission. Gaps are expressed with men as the reference, as in the Directive.
 
 | Article 9 reporting item | Value |
 | :--- | ---: |
