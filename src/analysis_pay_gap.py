@@ -2,8 +2,8 @@
 Module 2 - Pay equity, framed on the EU Pay Transparency Directive.
 
 Directive (EU) 2023/970 had to be transposed into national law by 7 June 2026.
-Employers with 250+ workers report annually from 7 June 2027 on 2026 pay data -
-the exact window this dataset covers. Article 9 asks for the mean and median
+Employers with 250+ workers report by 7 June 2027 and every year after that
+(Art. 9(2)), on the preceding calendar year. Article 9 asks for the mean and median
 gender pay gap, the gap by category of workers, and the share of each gender in
 each pay quartile. Article 10 adds the sting: a gap of 5% or more in any
 category of workers that is not justified on objective, gender-neutral criteria
@@ -196,9 +196,11 @@ def run() -> str:
         "",
         f"Population: **{len(employees):,} active employees**, "
         f"{len(women) / len(employees):.0%} women / {len(men) / len(employees):.0%} men. "
-        "At this size the organisation reports **annually from 7 June 2027 on 2026 pay data** - "
-        "the window analysed here. Gaps are expressed with men as the reference, as in the "
-        "Directive.",
+        "At this size - 250 workers or more - the organisation reports **by 7 June 2027 and "
+        "every year thereafter** (Art. 9(2)), on the preceding calendar year. What follows is "
+        "computed on a **snapshot of active employees at 30 June 2026**, which is the shape of "
+        "the exercise rather than a statutory submission. Gaps are expressed with men as the "
+        "reference, as in the Directive.",
         "",
         md_table(["Article 9 reporting item", "Value"],
                  [["Mean gender pay gap", f"**{gap_mean:.1f}%**"],

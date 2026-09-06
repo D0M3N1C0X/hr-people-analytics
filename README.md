@@ -110,7 +110,9 @@ department does not have a culture problem; it has a composition problem.
 ### 2. Pay equity, EU Pay Transparency Directive
 
 Directive (EU) 2023/970 had to be transposed by **7 June 2026**; employers of this size report
-annually from **7 June 2027 on 2026 pay data** — the window analysed here. The module produces
+by **7 June 2027 and every year thereafter** (Art. 9(2)), on the preceding calendar year.
+This analysis runs on a snapshot of active employees at 30 June 2026 — the shape of the
+exercise, not a statutory submission, and not legal advice. The module produces
 the Article 9 reporting items and identifies the categories that would trip the Article 10
 5% joint-pay-assessment trigger.
 
