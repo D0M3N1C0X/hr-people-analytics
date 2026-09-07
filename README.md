@@ -191,7 +191,7 @@ generator, are in [`data/README.md`](data/README.md).
 ## About
 
 Built by **Domenico Perroni** — HR Operations & Advisory, People Analytics. Kraków, Poland.
-[LinkedIn](https://www.linkedin.com/in/domenico-perroni-8780981b8)
+[LinkedIn](https://www.linkedin.com/in/domenico-perroni)
 
 **Companion project:** [engagement-survey-analytics](https://github.com/D0M3N1C0X/engagement-survey-analytics)
 — an employee engagement survey analysed end to end, with an
