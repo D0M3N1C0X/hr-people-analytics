@@ -14,7 +14,10 @@ written report with recommendations.
 > No real employee data is used anywhere. The methods, the metric definitions and the way the
 > findings are argued are what this repository is for.
 
-**Read the full report: [`reports/findings.md`](reports/findings.md)**
+### ▶ [Read the report online](https://d0m3n1c0x.github.io/hr-people-analytics/)
+
+Every chart and recommendation on one page, no install. The same text is in
+[`reports/findings.md`](reports/findings.md).
 
 ---
 
@@ -190,11 +193,13 @@ generator, are in [`data/README.md`](data/README.md).
 
 ## About
 
-Built by **Domenico Perroni** — HR Operations & Advisory, People Analytics. Kraków, Poland.
-[LinkedIn](https://www.linkedin.com/in/domenico-perroni)
+Built by **Domenico Perroni** — HR advisory, people analytics and media education, based in Kraków.
+[GitHub profile](https://github.com/D0M3N1C0X) · [LinkedIn](https://www.linkedin.com/in/domenico-perroni)
 
-**Companion project:** [engagement-survey-analytics](https://github.com/D0M3N1C0X/engagement-survey-analytics)
-— an employee engagement survey analysed end to end, with an
-[interactive dashboard](https://d0m3n1c0x.github.io/engagement-survey-analytics/) you can filter in the browser.
+**More from the same portfolio**
+
+- [engagement-survey-analytics](https://github.com/D0M3N1C0X/engagement-survey-analytics) — an employee engagement survey analysed end to end, with a [live dashboard](https://d0m3n1c0x.github.io/engagement-survey-analytics/) you can filter in the browser
+- [job-search-agent](https://github.com/D0M3N1C0X/job-search-agent) — a job search run as a pipeline: public ATS board APIs, explainable fit scoring, funnel analytics
+- [pompei-stratificata](https://github.com/D0M3N1C0X/pompei-stratificata) — Pompeii and Herculaneum from AD 79 to today, a [walkable model](https://d0m3n1c0x.github.io/pompei-stratificata/) with a sourced documentary dossier, in six languages
 
 MIT licensed. Reuse anything here.
