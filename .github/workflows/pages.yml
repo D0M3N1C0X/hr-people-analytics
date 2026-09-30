@@ -10,6 +10,7 @@ on:
     paths:
       - reports/**
       - .github/workflows/pages.yml
+      - site-assets/**
   workflow_dispatch:
 
 permissions:
@@ -36,6 +37,18 @@ jobs:
           mkdir -p site
           cp reports/findings.html site/index.html
           cp -r reports site/reports
+
+      - name: Add the link preview
+        run: |
+          cp site-assets/og.png site/og.png
+          python3 - <<'PY'
+          from pathlib import Path
+          page = Path("site/index.html")
+          html = page.read_text(encoding="utf-8")
+          assert html.count("<head>") == 1, "expected one <head> tag"
+          meta = Path("site-assets/og-meta.html").read_text(encoding="utf-8")
+          page.write_text(html.replace("<head>", "<head>\n" + meta, 1), encoding="utf-8")
+          PY
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
