@@ -14,15 +14,15 @@ from the code in this repository
 
 ## 1. Attrition & retention
 
-**Headline.** Average headcount over the window is **3,360**. Voluntary turnover is **13.6%** (457 exits); total turnover, including dismissals and end-of-contract, is **16.6%**. **110** voluntary leavers - **24%** of them - held a performance rating of 4 or 5, so a quarter of the loss sits in the population you least want to lose.
+**Headline.** Average headcount over the window is **3,364**. Voluntary turnover is **13.6%** (457 exits); total turnover, including dismissals and end-of-contract, is **16.6%**. **110** voluntary leavers - **24%** of them - held a performance rating of 4 or 5, so a quarter of the loss sits in the population you least want to lose.
 
-**Where it is concentrated.** Customer Service runs at **16.9%**, **+3.3 pp** against the company average. It carries 30% of the workforce but produces **36%** of all voluntary exits.
+**Where it is concentrated.** Customer Service runs at **16.8%**, **+3.3 pp** against the company average. It carries 30% of the workforce but produces **36%** of all voluntary exits.
 
 ![Voluntary turnover by department](figures/01_turnover_by_department.svg)
 
 | Department | Headcount share | Voluntary turnover | vs average |
 | :--- | ---: | ---: | ---: |
-| Customer Service | 30% | 16.9% | +3.3 pp |
+| Customer Service | 30% | 16.8% | +3.3 pp |
 | Sales | 13% | 14.5% | +0.9 pp |
 | Finance | 10% | 13.4% | -0.2 pp |
 | Tech | 15% | 12.3% | -1.3 pp |
@@ -64,7 +64,7 @@ Note what the model does to Customer Service. On its own it is the worst perform
 
 At **30% of annual base salary** per replacement - the mid-point of the 20-40% range commonly cited for non-executive roles, covering recruiting, onboarding and lost productivity - the 457 voluntary exits carry an estimated **EUR 5,083,380**, of which **EUR 1,279,635** sits with the high-performer group.
 
-**Illustrative intervention.** 710 active employees (21% of the active population) sit below 0.92 compa-ratio. Bringing them to 0.95 of band costs **EUR 2,603,850** a year. Applying the estimated odds ratio to the base rate, that population would produce roughly **69 fewer resignations**, worth about **EUR 730,798** in avoided replacement cost - it recovers **28%** of the uplift bill in year one, before the productivity of the people who stay. Read honestly, that says a blanket uplift does not pay for itself: the version worth piloting is the targeted one, taking the below-band population inside Customer Service and the fixed-term cohort, where the odds ratios are highest and the salaries lowest. The estimate comes from an observational model and sizes the prize; it is not a causal guarantee.
+**Illustrative intervention.** 710 active employees (21% of the active population) sit below 0.92 compa-ratio. Bringing them to 0.95 of band costs **EUR 2,603,850** a year. Applying the estimated odds ratio to the base rate, that population would produce roughly **69 fewer resignations**, worth about **EUR 729,911** in avoided replacement cost - it recovers **28%** of the uplift bill in year one, before the productivity of the people who stay. Read honestly, that says a blanket uplift does not pay for itself: the version worth piloting is the targeted one, taking the below-band population inside Customer Service and the fixed-term cohort, where the odds ratios are highest and the salaries lowest. The estimate comes from an observational model and sizes the prize; it is not a causal guarantee.
 
 
 ## 2. Pay equity under the EU Pay Transparency Directive
