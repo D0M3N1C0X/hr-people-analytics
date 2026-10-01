@@ -25,7 +25,7 @@ Every chart and recommendation on one page, no install. The same text is in
 
 | | |
 |---|---|
-| **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.9% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio are 3.5x more likely to resign**, holding contract type, tenure, engagement and department constant. |
+| **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.8% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio are 3.5x more likely to resign**, holding contract type, tenure, engagement and department constant. |
 | **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like** — 88% of the headline number is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** would cross the 5% trigger for a joint pay assessment under the EU Pay Transparency Directive. |
 | **SLA attainment is 76% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
 
