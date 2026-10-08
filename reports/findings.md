@@ -14,15 +14,15 @@ from the code in this repository
 
 ## 1. Attrition & retention
 
-**Headline.** Average headcount over the window is **3,360**. Voluntary turnover is **13.6%** (457 exits); total turnover, including dismissals and end-of-contract, is **16.6%**. **110** voluntary leavers - **24%** of them - held a performance rating of 4 or 5, so a quarter of the loss sits in the population you least want to lose.
+**Headline.** Average headcount over the window is **3,364**. Voluntary turnover is **13.6%** (457 exits); total turnover, including dismissals and end-of-contract, is **16.6%**. **110** voluntary leavers - **24%** of them - held a performance rating of 4 or 5, so a quarter of the loss sits in the population you least want to lose.
 
-**Where it is concentrated.** Customer Service runs at **16.9%**, **+3.3 pp** against the company average. It carries 30% of the workforce but produces **36%** of all voluntary exits.
+**Where it is concentrated.** Customer Service runs at **16.8%**, **+3.3 pp** against the company average. It carries 30% of the workforce but produces **36%** of all voluntary exits.
 
 ![Voluntary turnover by department](figures/01_turnover_by_department.svg)
 
 | Department | Headcount share | Voluntary turnover | vs average |
 | :--- | ---: | ---: | ---: |
-| Customer Service | 30% | 16.9% | +3.3 pp |
+| Customer Service | 30% | 16.8% | +3.3 pp |
 | Sales | 13% | 14.5% | +0.9 pp |
 | Finance | 10% | 13.4% | -0.2 pp |
 | Tech | 15% | 12.3% | -1.3 pp |
