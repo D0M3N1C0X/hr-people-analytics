@@ -31,20 +31,40 @@ ORDER BY month_start;
 
 -- name: turnover_by_department
 -- ? Which departments lose the most people, and how do they rank?
-WITH stats AS (
+WITH RECURSIVE months(month_start) AS (
+    SELECT '2025-07-01'
+    UNION ALL
+    SELECT date(month_start, '+1 month') FROM months WHERE month_start < '2026-06-01'
+), department_months AS (
+    SELECT m.month_start,
+           e.department,
+           SUM(CASE WHEN e.hire_date <= date(m.month_start, '+1 month', '-1 day')
+                     AND (e.exit_date IS NULL
+                          OR e.exit_date > date(m.month_start, '+1 month', '-1 day'))
+                    THEN 1 ELSE 0 END) AS headcount
+    FROM months m CROSS JOIN employees e
+    GROUP BY m.month_start, e.department
+), average_headcount AS (
+    SELECT department, AVG(headcount) AS average_headcount
+    FROM department_months
+    GROUP BY department
+), exits AS (
     SELECT department,
-           COUNT(*)                                                       AS employees,
            SUM(CASE WHEN exit_type = 'Voluntary' THEN 1 ELSE 0 END)       AS voluntary_exits,
            SUM(CASE WHEN exit_date IS NOT NULL THEN 1 ELSE 0 END)         AS all_exits
     FROM employees
     GROUP BY department
+), stats AS (
+    SELECT h.department, h.average_headcount, e.voluntary_exits, e.all_exits
+    FROM average_headcount h
+    JOIN exits e USING (department)
 )
 SELECT department,
-       employees,
+       ROUND(average_headcount, 0)                                        AS average_headcount,
        voluntary_exits,
-       ROUND(100.0 * voluntary_exits / employees, 1)                      AS voluntary_pct,
-       ROUND(100.0 * all_exits / employees, 1)                            AS total_pct,
-       RANK() OVER (ORDER BY 1.0 * voluntary_exits / employees DESC)      AS risk_rank,
+       ROUND(100.0 * voluntary_exits / average_headcount, 1)              AS voluntary_pct,
+       ROUND(100.0 * all_exits / average_headcount, 1)                    AS total_pct,
+       RANK() OVER (ORDER BY 1.0 * voluntary_exits / average_headcount DESC) AS risk_rank,
        ROUND(100.0 * voluntary_exits
              / SUM(voluntary_exits) OVER (), 1)                           AS share_of_all_exits
 FROM stats

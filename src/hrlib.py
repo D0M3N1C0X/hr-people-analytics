@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from calendar import monthrange
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
@@ -103,7 +104,8 @@ def monthly_headcount(employees: list[dict]) -> list[int]:
     counts = []
     for m in range(12):
         y, mo = divmod(WINDOW_START.month - 1 + m, 12)
-        month_end = date(WINDOW_START.year + y, mo + 1, 28)
+        month = mo + 1
+        month_end = date(WINDOW_START.year + y, month, monthrange(WINDOW_START.year + y, month)[1])
         counts.append(sum(1 for e in employees
                           if e["hire_dt"] <= month_end
                           and (e["exit_dt"] is None or e["exit_dt"] > month_end)))
