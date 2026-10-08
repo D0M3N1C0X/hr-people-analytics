@@ -148,8 +148,24 @@ def run() -> str:
 
     below_band = [e for e in employees if e["active"] and e["compa_ratio"] < 0.92]
     uplift_cost = sum(e["salary_band_mid_eur"] * 0.95 - e["base_salary_eur"] for e in below_band)
-    or_pay = math.exp(model.get("Paid below band (compa-ratio < 0.92)"))
-    avoided = len(below_band) * (vol_rate / 100) * (1 - 1 / or_pay)
+    pay_key = "Paid below band (compa-ratio < 0.92)"
+    or_pay = math.exp(model.get(pay_key))
+
+    # What the gap is worth, from the model itself: for each employee below band at the cutoff, the
+    # predicted chance of resigning in the nine-month window with the gap and without it, everything
+    # else held as it is. An odds ratio is not a risk ratio once exits are common, so 1 - 1/OR would
+    # overstate the effect; the model's own predictions do not.
+    def predicted(e: dict, below: float) -> float:
+        eta = model.get("intercept") + sum(
+            model.get(name) * (below if name == pay_key else float(test(e))) for name, test in drivers.items())
+        return 1 / (1 + math.exp(-eta))
+
+    at_risk_below = [e for e in frame if drivers[pay_key](e)]
+    risk_with = mean([predicted(e, 1.0) for e in at_risk_below])
+    risk_without = mean([predicted(e, 0.0) for e in at_risk_below])
+    # nine-month risk to a year, assuming a constant monthly hazard
+    yearly = lambda r: 1 - (1 - r) ** (12 / 9)
+    avoided = len(below_band) * (yearly(risk_with) - yearly(risk_without))
     avoided_cost = avoided * mean([e["base_salary_eur"] for e in below_band]) * REPLACEMENT_COST_RATE
 
     # Composition vs culture: is the worst department still worse once the
@@ -255,8 +271,9 @@ def run() -> str:
         f"**Illustrative intervention.** {len(below_band)} active employees "
         f"({len(below_band) / sum(1 for e in employees if e['active']):.0%} of the active "
         f"population) sit below 0.92 compa-ratio. Bringing them to 0.95 of band costs "
-        f"**{eur(uplift_cost)}** a year. Applying the estimated odds ratio to the base rate, "
-        f"that population would produce roughly **{avoided:.0f} fewer resignations**, worth "
+        f"**{eur(uplift_cost)}** a year. The model puts their chance of resigning within a year at "
+        f"**{yearly(risk_with):.1%}** with the gap and **{yearly(risk_without):.1%}** without it, everything else held "
+        f"equal; that is roughly **{avoided:.0f} fewer resignations** a year, worth "
         f"about **{eur(avoided_cost)}** in avoided replacement cost - it recovers "
         f"**{avoided_cost / uplift_cost:.0%}** of the uplift bill in year one, before the "
         "productivity of the people who stay. Read honestly, that says a blanket uplift does "

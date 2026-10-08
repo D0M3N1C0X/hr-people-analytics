@@ -25,9 +25,9 @@ Every chart and recommendation on one page, no install. The same text is in
 
 | | |
 |---|---|
-| **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.9% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio are 3.5x more likely to resign**, holding contract type, tenure, engagement and department constant. |
+| **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.9% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio have 3.53x the odds of resigning**, holding contract type, tenure, engagement and department constant: in the model, about **28% a year against 10%** without the gap. |
 | **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like** — 88% of the headline number is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** would cross the 5% trigger for a joint pay assessment under the EU Pay Transparency Directive. |
-| **SLA attainment is 76% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
+| **SLA attainment is 76.4% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
 
 ![Voluntary turnover by department](reports/figures/01_turnover_by_department.svg)
 
@@ -63,6 +63,12 @@ python3 src/run_sql.py
 ```
 
 runs the SQL layer against `data/hr.db` and prints the results as tables.
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+runs the tests, also with no packages installed.
 
 ---
 
@@ -182,6 +188,17 @@ totals for Pareto analysis, `RANK()` for department risk and moving averages for
   `src/hrlib.py` or `src/analysis_service_desk.py` and every dependent number updates.
 - **Small samples are flagged, not spun.** Pay-gap categories under ~50 employees carry wide
   intervals and are labelled as such in the report.
+- **What an intervention is worth comes from the model's own predictions.** For each employee below
+  band, the predicted chance of resigning with the gap and without it, everything else held equal.
+  An odds ratio is not a risk ratio once exits are common, so it is not applied to a base rate.
+- **The statistics are tested against closed forms**: a logit with one binary predictor must return
+  the log odds ratio of its 2×2 table and that ratio's standard error; OLS must match the simple
+  regression formula. Tests also check that every headline figure in this README is in the report.
+
+**Correction, 8 October 2026.** The intervention used to multiply the company-wide exit rate by
+(1 − 1/OR), which treats an odds ratio as a risk ratio and applies the wrong base rate. Computed from
+the model's predictions it avoids about 128 resignations a year, not 69, and recovers 52% of the
+uplift bill, not 28%. The conclusion stands: a blanket uplift does not pay for itself.
 
 Full write-up of methods and limits at the end of [`reports/findings.md`](reports/findings.md).
 
