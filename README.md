@@ -26,7 +26,7 @@ Every chart and recommendation on one page, no install. The same text is in
 | | |
 |---|---|
 | **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.8% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio have 3.53x the odds of resigning**, holding contract type, tenure, engagement and department constant: in the model, about **28% a year against 10%** without the gap. |
-| **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like** — 88% of the headline number is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** would cross the 5% trigger for a joint pay assessment under the EU Pay Transparency Directive. |
+| **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like.** On the log-pay model, whose raw gap is 13.9%, 88% of it is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** would cross the 5% trigger for a joint pay assessment under the EU Pay Transparency Directive. |
 | **SLA attainment is 76.4% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
 
 ![Voluntary turnover by department](reports/figures/01_turnover_by_department.svg)
@@ -127,8 +127,8 @@ the Article 9 reporting items and identifies the categories that would trip the 
 
 ![What is left of the pay gap as controls are added](reports/figures/07_pay_gap_decomposition.svg)
 
-Adding controls one block at a time is the point: 15.4% raw, 3.8% once job level is held
-constant, 1.6% fully adjusted. The remediation bill for the residual gap is small. Changing who
+Adding controls one block at a time is the point: on the log-pay model, 13.9% raw (15.4% on
+arithmetic means), 3.8% once job level is held constant, 1.6% fully adjusted. The remediation bill for the residual gap is small. Changing who
 gets promoted — women are 38% of the top pay quartile and 60% of the bottom one — is the work
 that actually moves the headline number.
 
