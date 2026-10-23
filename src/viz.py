@@ -15,10 +15,10 @@ from pathlib import Path
 W, H = 920, 545
 M = {"top": 110, "right": 48, "bottom": 96, "left": 96}
 
-FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
-INK, MUTED, GRID, PAPER = "#1f2933", "#6b7280", "#e5e7eb", "#ffffff"
+FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+INK, MUTED, GRID, PAPER = "#1d1d1f", "#6e6e73", "#e8e8ed", "#ffffff"
 BLUE, AMBER, GREEN, RED, VIOLET, SLATE = (
-    "#2563eb", "#f59e0b", "#10b981", "#dc2626", "#7c3aed", "#94a3b8")
+    "#0071e3", "#ff9500", "#1baf7a", "#d70015", "#5e5ce6", "#a1a1a6")
 PALETTE = [BLUE, AMBER, GREEN, VIOLET, RED, SLATE]
 
 

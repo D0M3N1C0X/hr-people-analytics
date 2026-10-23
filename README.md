@@ -1,23 +1,32 @@
-# People Analytics: attrition, pay equity and HR service delivery
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site-assets/cover-dark.png">
+  <img alt="Why people leave, and what it costs: 3.53 times the odds of resigning below 0.92 compa-ratio, 13.6% voluntary turnover, 76.4% SLA attainment against a 90% target." src="site-assets/cover-light.png">
+</picture>
 
-Three questions every People function has to answer with numbers — *why are people leaving,
-is our pay defensible, and is the HR service actually working* — answered end to end on a
-4,000-employee European organisation: data model, SQL warehouse, statistics, charts and a
-written report with recommendations.
+<p align="center">
+  <a href="https://d0m3n1c0x.github.io/hr-people-analytics/"><b>Read the report</b></a> ·
+  <a href="reports/findings.md">The report in Markdown</a> ·
+  <a href="sql/">The SQL layer</a>
+</p>
 
-[![pipeline](https://github.com/D0M3N1C0X/hr-people-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/D0M3N1C0X/hr-people-analytics/actions/workflows/ci.yml)
-![python](https://img.shields.io/badge/python-3.10%2B-blue)
-![dependencies](https://img.shields.io/badge/dependencies-none-10b981)
-![license](https://img.shields.io/badge/license-MIT-lightgrey)
+<p align="center">
+  <a href="https://github.com/D0M3N1C0X/hr-people-analytics/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/D0M3N1C0X/hr-people-analytics/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-0071e3">
+  <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-none-5e5ce6">
+  <img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-6e6e73">
+</p>
+
+## Why this matters
+
+Three questions every People function has to answer with numbers: *why are people leaving, is our pay defensible,
+and is the HR service actually working.* They are answered here end to end on a 4,000-employee European
+organisation, as an HR analytics team would hand them to leadership: data model, SQL warehouse, statistics, charts
+and a written report with costed recommendations. The same organisation feeds the pay transparency kit, the
+equal-value pay ranges and the workforce cost model in this portfolio.
 
 > **The data is synthetic**, generated with a fixed seed by [`src/generate_data.py`](src/generate_data.py).
 > No real employee data is used anywhere. The methods, the metric definitions and the way the
 > findings are argued are what this repository is for.
-
-### ▶ [Read the report online](https://d0m3n1c0x.github.io/hr-people-analytics/)
-
-Every chart and recommendation on one page, no install. The same text is in
-[`reports/findings.md`](reports/findings.md).
 
 ---
 

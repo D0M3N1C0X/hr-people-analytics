@@ -26,35 +26,32 @@ SOURCE = REPORTS / "findings.md"
 TITLE = "People Analytics FY2026"
 
 STYLE = """
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
 :root{
-  --paper:#fbfcfd; --surface:#ffffff; --ink:#131a24; --ink-soft:#39434f; --muted:#5f6b7a;
-  --line:#e2e7ef; --line-strong:#c9d2df; --accent:#1d4ed8; --accent-wash:#eef3ff;
-  --flag:#b5352c; --flag-wash:#fdeceb; --ok:#0c6b59; --ok-wash:#e8f5f1;
-  --plate:#ffffff; --plate-edge:#dde4ee; --shadow:0 1px 2px rgba(19,26,36,.06),0 8px 24px rgba(19,26,36,.06);
+  --paper:#ffffff; --surface:#ffffff; --ink:#1d1d1f; --ink-soft:#424245; --muted:#6e6e73;
+  --line:#e8e8ed; --line-strong:#d2d2d7; --accent:#0071e3; --accent-wash:#eef5fd;
+  --flag:#d70015; --flag-wash:#fdeceb; --ok:#1a7f37; --ok-wash:#e6f4ea;
+  --plate:#ffffff; --plate-edge:#e8e8ed; --shadow:0 1px 2px rgba(19,26,36,.06),0 8px 24px rgba(19,26,36,.06);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#0f141b; --surface:#161d26; --ink:#e7ecf3; --ink-soft:#c3cbd6; --muted:#8b97a6;
-    --line:#232c38; --line-strong:#33404f; --accent:#7ba4ff; --accent-wash:#17233a;
-    --flag:#f08a80; --flag-wash:#2e1b1a; --ok:#5fc6ae; --ok-wash:#12291f;
-    --plate:#ffffff; --plate-edge:#2b3542; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+    --paper:#000000; --surface:#15171c; --ink:#f5f5f7; --ink-soft:#c7c9d1; --muted:#8b8f9a;
+    --line:#23262e; --line-strong:#343844; --accent:#4f8cff; --accent-wash:#101b33;
+    --flag:#ff6961; --flag-wash:#331314; --ok:#32d74b; --ok-wash:#0f2a17;
+    --plate:#ffffff; --plate-edge:#343844; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"]{
-  --paper:#0f141b; --surface:#161d26; --ink:#e7ecf3; --ink-soft:#c3cbd6; --muted:#8b97a6;
-  --line:#232c38; --line-strong:#33404f; --accent:#7ba4ff; --accent-wash:#17233a;
-  --flag:#f08a80; --flag-wash:#2e1b1a; --ok:#5fc6ae; --ok-wash:#12291f;
-  --plate:#ffffff; --plate-edge:#2b3542; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  --paper:#000000; --surface:#15171c; --ink:#f5f5f7; --ink-soft:#c7c9d1; --muted:#8b8f9a;
+  --line:#23262e; --line-strong:#343844; --accent:#4f8cff; --accent-wash:#101b33;
+  --flag:#ff6961; --flag-wash:#331314; --ok:#32d74b; --ok-wash:#0f2a17;
+  --plate:#ffffff; --plate-edge:#343844; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
 }
 
 *{box-sizing:border-box}
 body{
   margin:0; background:var(--paper); color:var(--ink);
-  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   font-size:17px; line-height:1.68; -webkit-font-smoothing:antialiased;
 }
 .page{padding:clamp(1.25rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem}
@@ -62,13 +59,13 @@ body{
 .doc > *{width:100%; max-width:42rem; margin:0}
 .doc > figure, .doc > .table-wrap{max-width:57rem}
 
-h1,h2,h3{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; text-wrap:balance; margin:0}
+h1,h2,h3{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; text-wrap:balance; margin:0}
 h1{font-size:clamp(2.1rem,5.5vw,3.1rem); font-weight:600; letter-spacing:-.015em; line-height:1.12}
 h2{font-size:clamp(1.5rem,3.4vw,2rem); font-weight:600; letter-spacing:-.01em;
    display:flex; align-items:baseline; gap:.75rem; padding-top:2.5rem;
    border-top:1px solid var(--line); margin-top:1.5rem}
 h2 .num{
-  font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.8rem;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.8rem;
   font-weight:500; color:var(--accent); letter-spacing:.08em; transform:translateY(-.15em);
 }
 h3{font-size:1.22rem; font-weight:600; padding-top:1.25rem}
@@ -79,12 +76,12 @@ a:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radi
 
 .masthead{border-bottom:2px solid var(--ink); padding-bottom:1.5rem}
 .eyebrow{
-  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.72rem; letter-spacing:.16em;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.72rem; letter-spacing:.16em;
   text-transform:uppercase; color:var(--muted); margin-bottom:1rem
 }
 dl.meta{display:grid; grid-template-columns:auto 1fr; gap:.4rem 1.25rem; margin:1.4rem 0 0; font-size:.94rem}
 dl.meta dt{
-  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.72rem; letter-spacing:.1em;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.72rem; letter-spacing:.1em;
   text-transform:uppercase; color:var(--muted); padding-top:.28em
 }
 dl.meta dd{margin:0; color:var(--ink-soft)}
@@ -102,7 +99,7 @@ figure .plate{
 }
 figure svg{display:block; width:100%; height:auto; min-width:32rem}
 figcaption{
-  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.72rem; letter-spacing:.06em;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.72rem; letter-spacing:.06em;
   color:var(--muted); text-transform:uppercase
 }
 
@@ -110,13 +107,13 @@ figcaption{
 table{border-collapse:collapse; width:100%; font-size:.92rem; font-variant-numeric:tabular-nums}
 th,td{padding:.62rem .9rem; text-align:left; border-bottom:1px solid var(--line)}
 thead th{
-  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.68rem; font-weight:500;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.68rem; font-weight:500;
   letter-spacing:.09em; text-transform:uppercase; color:var(--muted);
   border-bottom:1px solid var(--line-strong); white-space:nowrap
 }
 tbody tr:last-child td{border-bottom:none}
 td.r,th.r{text-align:right}
-td.r{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86rem}
+td.r{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.86rem}
 
 .pill{
   display:inline-block; padding:.14em .6em; border-radius:999px; font-size:.72rem;
@@ -126,11 +123,11 @@ td.r{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86rem}
 .pill.ok{background:var(--ok-wash); color:var(--ok)}
 
 code{
-  font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.86em;
   background:var(--accent-wash); color:var(--ink); padding:.1em .35em; border-radius:3px
 }
 ol{margin:0; padding-left:1.3rem; display:grid; gap:.75rem; color:var(--ink-soft)}
-ol li::marker{color:var(--accent); font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.85em}
+ol li::marker{color:var(--accent); font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.85em}
 hr{border:none; height:1px; background:var(--line); margin:1rem 0}
 
 footer.colophon{
