@@ -29,8 +29,8 @@ STYLE = """
 <style>
 :root{
   --paper:#ffffff; --surface:#ffffff; --ink:#1d1d1f; --ink-soft:#424245; --muted:#6e6e73;
-  --line:#e8e8ed; --line-strong:#d2d2d7; --accent:#0071e3; --accent-wash:#eef5fd;
-  --flag:#d70015; --flag-wash:#fdeceb; --ok:#1a7f37; --ok-wash:#e6f4ea;
+  --line:#e8e8ed; --line-strong:#d2d2d7; --accent:#0066cc; --accent-wash:#eef5fd;
+  --flag:#d70015; --flag-wash:#fdeceb; --ok:#17783a; --ok-wash:#e6f4ea;
   --plate:#ffffff; --plate-edge:#e8e8ed; --shadow:0 1px 2px rgba(19,26,36,.06),0 8px 24px rgba(19,26,36,.06);
 }
 @media (prefers-color-scheme: dark){
@@ -188,7 +188,9 @@ def parse_table(rows: list[str]) -> str:
     head = "".join(
         '<th{}>{}</th>'.format(' class="r"' if aligns[i] == "r" else "", inline(h))
         for i, h in enumerate(headers))
-    return ('<div class="table-wrap"><table><thead><tr>' + head + "</tr></thead><tbody>"
+    label = re.sub(r"<[^>]+>", "", inline(headers[0])) if headers else ""
+    return ('<div class="table-wrap" tabindex="0" role="region" aria-label="Table: ' + label.replace('"', "") + '">'
+            + '<table><thead><tr>' + head + "</tr></thead><tbody>"
             + "".join(body) + "</tbody></table></div>")
 
 
@@ -198,6 +200,12 @@ def figure(alt: str, src: str) -> str:
         return f'<p class="note">[missing figure: {html.escape(src)}]</p>'
     svg = svg_path.read_text(encoding="utf-8")
     svg = re.sub(r'\s(width|height)="\d+"', "", svg, count=2)
+    # the chart is described by its caption: a screen reader reads one image, not every mark
+    head = re.match(r"<svg[^>]*>", svg.lstrip())
+    if head:
+        clean = re.sub(r'\s(role|aria-label)="[^"]*"', "", head.group(0))
+        label = f'<svg role="img" aria-label="{html.escape(alt, quote=True)}"'
+        svg = svg.replace(head.group(0), clean.replace("<svg", label, 1), 1)
     return (f'<figure><div class="plate">{svg}</div>'
             f"<figcaption>{html.escape(alt)}</figcaption></figure>")
 
