@@ -35,7 +35,7 @@ equal-value pay ranges and the workforce cost model in this portfolio.
 | | |
 |---|---|
 | **Voluntary turnover is 13.6%**, but it is not spread evenly — Customer Service runs at 16.8% and produces 36% of all exits on 30% of the workforce. | Employees paid **below 0.92 compa-ratio have 3.53x the odds of resigning**, holding contract type, tenure, engagement and department constant: in the model, about **28% a year against 10%** without the gap. |
-| **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like.** On the log-pay model, whose raw gap is 13.9%, 88% of it is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** would cross the 5% trigger for a joint pay assessment under the EU Pay Transparency Directive. |
+| **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like.** On the log-pay model, whose raw gap is 13.9%, 88% of it is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** cross the modelled 5% pay-gap screen. The dataset does not model employer justification or remedy within six months, so it cannot establish that a joint pay assessment is required. |
 | **SLA attainment is 76.4% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
 
 ![Voluntary turnover by department](reports/figures/01_turnover_by_department.svg)
