@@ -124,6 +124,41 @@ Sex, age and country are not inputs, which proves nothing on its own: a model ca
 **What this audit cannot see.** Disability, origin and other characteristics are not in the data, and should not be added to it just to test the model; the impact assessment asks the people concerned and their representatives instead. The groups also overlap: part-time staff are 55% women.
 
 
+### When people leave: survival on tenure time
+
+Odds ratios say who is more likely to leave within a window. A workforce plan needs the other question: of a hundred people hired, how many are still here after one, two, three years? Time here is tenure in months, and the twelve months of data are used for what they are: someone hired in 2019 enters observation with six years behind them, so they only count from there (delayed entry).
+
+| Tenure | Everyone | Paid at or above 0.92 of band | Paid below |
+| :--- | ---: | ---: | ---: |
+| 6 months | 87% | 94% | 80% |
+| 12 months | 77% | 88% | 63% |
+| 24 months | 72% | 84% | 56% |
+| 36 months | 65% | 77% | 40% |
+| 60 months | 54% | 67% | 24% |
+
+![Survival by pay position](figures/17_survival_by_pay.svg)
+
+**77% of hires are still here after a year, 72% after two and 65% after three** (voluntary exits only). Counting everyone from their first day, as if the data had always been there, would put the first year at **94%**: it credits the organisation with every early leaver who left before July 2025 and so never appears in the data.
+
+**Pay position is visible in the curves from the first months.** Over the first 36 months, people paid below 0.92 of band stay **22.4 months** on average against **31.3** for the rest (log-rank chi-square 187.9, p < 0.001). Fixed-term contracts separate as clearly (chi-square 48.7).
+
+![Hazard ratios](figures/18_hazard_ratios.svg)
+
+| Factor | Hazard ratio | p-value |
+| :--- | ---: | ---: |
+| Paid below band (compa-ratio < 0.92) | 3.10x | <0.001 |
+| Fixed-term contract | 2.09x | <0.001 |
+| Engagement in bottom quartile | 1.50x | <0.001 |
+| Works in Customer Service | 1.39x | <0.001 |
+| Fully onsite | 1.19x | 0.083 |
+
+A hazard ratio reads as how much faster resignations come, at any given tenure, for someone with the factor than for an otherwise similar colleague without it. Tenure is the time axis itself here, so the first-year effect the logistic model needed a term for is absorbed into the baseline.
+
+**Does pay matter as much in the first year?** Splitting each person's tenure at twelve months, in a model with pay position alone, being paid below band multiplies the resignation hazard by **3.63** in the first year and **3.96** after it (difference p = 0.68): the effect is the same throughout, so a pay fix helps new and long-serving staff alike.
+
+*One limit is specific to this data: pay position is a single value per person, applied across their whole tenure. In a real HRIS it changes with every raise and band review, and has to enter the model as a time-varying covariate, split at each change the way tenure is split at twelve months above.*
+
+
 ## 2. Pay equity under the EU Pay Transparency Directive
 
 Population: **3,443 active employees**, 50% women / 50% men. At this size - 250 workers or more - the organisation reports **by 7 June 2027 and every year thereafter** (Art. 9(2)), on the preceding calendar year. What follows is computed on a **snapshot of active employees at 30 June 2026**, which is the shape of the exercise rather than a statutory submission. Gaps are expressed with men as the reference, as in the Directive.
@@ -267,6 +302,13 @@ For each group it compares predicted and observed resignations (with the gap in 
 the sum of p(1 - p) over the group), the AUC inside the group, and at one company-wide cut, the top 10%
 of scores, how many resigners are caught and how many stayers are flagged. The model card in
 `docs/model_card.md` is generated from the same numbers.
+
+**Survival** uses tenure in months as the time axis, with delayed entry: everyone already employed on
+1 July 2025 enters the risk set at the tenure they had that day, and involuntary exits and the snapshot
+censor. Kaplan-Meier with Greenwood standard errors; two-group log-rank tests; Cox proportional hazards
+fitted by Newton-Raphson on the partial likelihood with Breslow ties; the expected time stayed is the
+area under the survival curve to 36 months. Whether the pay effect changes after the first year is tested
+by splitting each person's tenure at twelve months and adding the interaction.
 
 **The pay-gap model** is OLS on log(base salary), so coefficients read as percentage
 differences. Controls are added in blocks - level, then department, then country, tenure and

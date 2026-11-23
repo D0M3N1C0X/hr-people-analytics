@@ -22,6 +22,7 @@ import analysis_attrition
 import analysis_fairness
 import analysis_pay_gap
 import analysis_service_desk
+import analysis_survival
 import analysis_validation
 import build_db
 import build_model_card
@@ -78,6 +79,13 @@ the sum of p(1 - p) over the group), the AUC inside the group, and at one compan
 of scores, how many resigners are caught and how many stayers are flagged. The model card in
 `docs/model_card.md` is generated from the same numbers.
 
+**Survival** uses tenure in months as the time axis, with delayed entry: everyone already employed on
+1 July 2025 enters the risk set at the tenure they had that day, and involuntary exits and the snapshot
+censor. Kaplan-Meier with Greenwood standard errors; two-group log-rank tests; Cox proportional hazards
+fitted by Newton-Raphson on the partial likelihood with Breslow ties; the expected time stayed is the
+area under the survival curve to 36 months. Whether the pay effect changes after the first year is tested
+by splitting each person's tenure at twelve months and adding the interaction.
+
 **The pay-gap model** is OLS on log(base salary), so coefficients read as percentage
 differences. Controls are added in blocks - level, then department, then country, tenure and
 contract - to separate a like-for-like pay difference from a structural one. Adjusted gaps
@@ -109,6 +117,7 @@ def main() -> None:
     for name, module in (("attrition & retention", analysis_attrition),
                          ("out-of-time validation", analysis_validation),
                          ("fairness audit", analysis_fairness),
+                         ("survival on tenure time", analysis_survival),
                          ("pay equity", analysis_pay_gap),
                          ("service desk", analysis_service_desk)):
         sections.append(module.run())

@@ -108,3 +108,72 @@ class ScoringAClassifier(unittest.TestCase):
         labels = [int(rng.random() < p) for p in probs]
         _, slope = statsx.calibration_slope(probs, labels)
         self.assertAlmostEqual(slope, 1.0, delta=0.12)
+
+
+class Survival(unittest.TestCase):
+    """Kaplan-Meier, log-rank and Cox against results worked out by hand."""
+
+    # Six subjects, no delayed entry: events at 2, 3, 5; censored at 3, 4, 6.
+    DATA = [(0, 2, 1), (0, 3, 1), (0, 3, 0), (0, 4, 0), (0, 5, 1), (0, 6, 0)]
+
+    def test_kaplan_meier_by_hand(self):
+        curve = statsx.kaplan_meier(self.DATA)
+        # at 2: 6 at risk, 1 event -> 5/6; at 3: 5 at risk, 1 event -> 5/6 * 4/5; at 5: 2 at risk -> * 1/2
+        self.assertEqual([t for t, *_ in curve], [2, 3, 5])
+        self.assertAlmostEqual(curve[0][1], 5 / 6)
+        self.assertAlmostEqual(curve[1][1], 4 / 6)
+        self.assertAlmostEqual(curve[2][1], 2 / 6)
+        greenwood = (4 / 6) * math.sqrt(1 / (6 * 5) + 1 / (5 * 4))
+        self.assertAlmostEqual(curve[1][2], greenwood)
+        self.assertAlmostEqual(statsx.restricted_mean(curve, 6), 2 + 3 * 5 / 6 / 3 * 1 + 2 * 4 / 6 + 1 * 2 / 6)
+
+    def test_delayed_entry_keeps_late_joiners_out_of_early_risk_sets(self):
+        # the second subject enters at 3, so it is not at risk at the event at 2
+        curve = statsx.kaplan_meier([(0, 2, 1), (3, 5, 0), (0, 4, 0)])
+        self.assertEqual(curve[0][3], 2)
+        self.assertAlmostEqual(curve[0][1], 0.5)
+
+    def test_cox_score_test_with_one_binary_covariate_is_the_logrank_test(self):
+        rng = random.Random(3)
+        subjects, groups = [], []
+        for _ in range(300):
+            g = int(rng.random() < 0.5)
+            t = rng.expovariate(0.10 * (1.8 if g else 1.0))
+            c = rng.uniform(0, 15)
+            subjects.append((0.0, min(t, c), int(t <= c)))      # continuous: no ties, where the two agree exactly
+            groups.append(g)
+        chi2, _ = statsx.logrank(subjects, groups)
+        # score test at beta = 0: score^2 / information, taken from one Newton step's quantities
+        fit = statsx.cox(subjects, [[float(g)] for g in groups], ["group"], max_iter=1)
+        score_stat = (fit.coef[0] / fit.se[0]) ** 2   # after one step from 0, coef = U/I and se = 1/sqrt(I)
+        self.assertAlmostEqual(score_stat, chi2, places=6)
+
+    def test_cox_recovers_a_known_hazard_ratio(self):
+        rng = random.Random(11)
+        subjects, X = [], []
+        for _ in range(3000):
+            x = int(rng.random() < 0.4)
+            t = rng.expovariate(0.05 * (2.5 if x else 1.0))
+            subjects.append((0.0, min(t, 20.0), int(t <= 20)))
+            X.append([float(x)])
+        fit = statsx.cox(subjects, X, ["x"])
+        self.assertAlmostEqual(math.exp(fit.coef[0]), 2.5, delta=0.2)
+
+    def test_cox_with_delayed_entry_matches_the_naive_risk_sets(self):
+        rng = random.Random(5)
+        subjects, X = [], []
+        for _ in range(200):
+            a = rng.choice([0, 0, 2, 5])
+            b = a + rng.randint(1, 12)
+            subjects.append((a, b, int(rng.random() < 0.4)))
+            X.append([float(rng.random() < 0.5), rng.gauss(0, 1)])
+        fit = statsx.cox(subjects, X, ["g", "x"])
+        # the score at the fitted beta must be zero when computed the slow, obvious way
+        w = [math.exp(fit.coef[0] * x[0] + fit.coef[1] * x[1]) for x in X]
+        for j in range(2):
+            u = 0.0
+            for t in sorted({b for _, b, e in subjects if e}):
+                rs = [i for i, (a, b, _) in enumerate(subjects) if a < t <= b]
+                ds = [i for i, (a, b, e) in enumerate(subjects) if e and b == t and a < b]
+                u += sum(X[i][j] for i in ds) - len(ds) * sum(w[i] * X[i][j] for i in rs) / sum(w[i] for i in rs)
+            self.assertAlmostEqual(u, 0.0, places=6)
