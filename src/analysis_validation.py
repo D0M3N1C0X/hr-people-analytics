@@ -51,6 +51,7 @@ def frame_at(employees: list[dict], cases: list[dict], cutoff: date, eng_q1: flo
         r["_eng_q1"] = eng_q1
         r["reopened_q1"] = reopened.get(e["employee_id"], 0)
         r["y"] = int(e["is_voluntary_leaver"] and cutoff <= e["exit_dt"] < end)
+        r["cutoff"] = cutoff
         rows.append(r)
     return rows
 
@@ -118,6 +119,7 @@ def evaluate() -> dict:
     result = {"model": model, "department": dept, "train": scorecard(predict(train), [r["y"] for r in train]),
               "tests": {}, "pooled": None}
     pooled = {"model": [], "checklist": [], "ceiling": [], "y": []}
+    result["scored"] = []                       # (row, prediction, outcome) on the unseen quarters
     for cutoff in TESTS:
         rows = frame_at(employees, cases, cutoff, eng_q1)
         y = [r["y"] for r in rows]
@@ -127,6 +129,7 @@ def evaluate() -> dict:
         result["tests"][cutoff] = {"model": scorecard(p, y), "checklist_auc": auc(checklist, y),
                                    "checklist_top10": capture(checklist, y, 0.10),
                                    "ceiling": scorecard(ceiling, y)}
+        result["scored"] += [(row, prob, out) for row, prob, out in zip(rows, p, y)]
         for key, values in (("model", p), ("checklist", checklist), ("ceiling", ceiling), ("y", y)):
             pooled[key] += values
     y = pooled["y"]
@@ -134,6 +137,7 @@ def evaluate() -> dict:
                         "checklist_top10": capture(pooled["checklist"], y, 0.10),
                         "checklist_top20": capture(pooled["checklist"], y, 0.20),
                         "ceiling": scorecard(pooled["ceiling"], y)}
+    result["predict"], result["drivers"], result["eng_q1"] = predict, drivers, eng_q1
     result["curves"] = {"model": gains(pooled["model"], y), "checklist": gains(pooled["checklist"], y),
                         "ceiling": gains(pooled["ceiling"], y)}
     # Calibration in tenths of predicted risk, pooled over the two test quarters
@@ -233,7 +237,8 @@ def run() -> str:
         "",
         "**How to read it.** Even the best tenth of scores misses most resignations, and most people it flags "
         "stay. A score like this can decide where a manager's next stay conversation goes; it should never decide "
-        "anything about the person scored.",
+        "anything about the person scored. The [model card](../docs/model_card.md) sets out what it may and may "
+        "not be used for.",
         "",
     ]
     return "\n".join(md)

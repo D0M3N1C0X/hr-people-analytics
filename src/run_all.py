@@ -19,10 +19,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import analysis_attrition
+import analysis_fairness
 import analysis_pay_gap
 import analysis_service_desk
 import analysis_validation
 import build_db
+import build_model_card
 import build_report_html
 import generate_data
 from hrlib import ROOT, SNAPSHOT, WINDOW_START
@@ -70,6 +72,12 @@ the latent trait the published data leaves out. One limit is specific to synthet
 engagement and rating are single values per person, so in the test they are as current as they would be
 in a well-kept HRIS. In real data each must be taken as it stood on the scoring date.
 
+**The fairness audit** breaks the two unseen quarters down by sex, age band, country and working time.
+For each group it compares predicted and observed resignations (with the gap in standard errors, from
+the sum of p(1 - p) over the group), the AUC inside the group, and at one company-wide cut, the top 10%
+of scores, how many resigners are caught and how many stayers are flagged. The model card in
+`docs/model_card.md` is generated from the same numbers.
+
 **The pay-gap model** is OLS on log(base salary), so coefficients read as percentage
 differences. Controls are added in blocks - level, then department, then country, tenure and
 contract - to separate a like-for-like pay difference from a structural one. Adjusted gaps
@@ -100,6 +108,7 @@ def main() -> None:
     sections = []
     for name, module in (("attrition & retention", analysis_attrition),
                          ("out-of-time validation", analysis_validation),
+                         ("fairness audit", analysis_fairness),
                          ("pay equity", analysis_pay_gap),
                          ("service desk", analysis_service_desk)):
         sections.append(module.run())
@@ -114,6 +123,7 @@ def main() -> None:
     print(f"     reports/findings.md  ({REPORT.stat().st_size / 1024:.0f} KB)")
     print(f"     reports/figures/     ({len(figures)} charts)")
     build_report_html.main()
+    build_model_card.main()
     print("\nDone. Open reports/findings.md, or run `python3 src/run_sql.py` for the SQL layer.")
 
 

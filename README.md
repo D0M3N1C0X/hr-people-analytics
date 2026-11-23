@@ -38,6 +38,7 @@ equal-value pay ranges and the workforce cost model in this portfolio.
 | **The gender pay gap is 15.4% unadjusted and 1.6% like-for-like.** On the log-pay model, whose raw gap is 13.9%, 88% of it is structural, not a pay-for-the-same-job problem. | **10 of 27 worker categories** cross the modelled 5% pay-gap screen. The dataset does not model employer justification or remedy within six months, so it cannot establish that a joint pay assessment is required. |
 | **SLA attainment is 76.4% against a 90% target**, and it collapses to 53% in January — the correlation between monthly volume and attainment is **r = −0.91**. | Cases that miss SLA **and** get reopened average **2.27 CSAT** against **4.69** for a clean resolution — and those reopened cases predict resignations nine months later. |
 | **Tested on quarters it never saw, the attrition model keeps an AUC of 0.75** (0.72-0.79), and its top 10% of scores catches **38%** of the next quarter's resignations. | Counting the same eight warning signs gets **0.72**; the generator's own truth, latent traits included, gets **0.80**. The model closes **84%** of the gap between chance and that ceiling. |
+| **The fairness audit finds the model's real flaw:** it over-reads Germany, **3.6%** predicted against **2.2%** resigning, **2.9** standard errors out, because country is not an input. | Of flagged people, **88%** stay. The [model card](docs/model_card.md) answers, as the provider, the 14 questions the [AI Act register](https://github.com/D0M3N1C0X/ai-act-hr-readiness-kit) asks of this high-risk system. |
 
 ![Voluntary turnover by department](reports/figures/01_turnover_by_department.svg)
 
@@ -54,7 +55,8 @@ equal-value pay ranges and the workforce cost model in this portfolio.
 | EU Pay Transparency Directive (2023/970): Art. 9 reporting items, Art. 10 joint pay assessment trigger | Nested OLS on log salary to separate structural from like-for-like pay gaps | SQL warehouse (SQLite) with CTEs, window functions and a view |
 | HR service-desk operations: SLA, FCR, reopen rate, CSAT, deflection and capacity planning | Welch tests and p-values reported, small samples flagged rather than spun | Charts generated as SVG from scratch — no plotting library |
 | Recommendations written for a leadership audience, not a technical one | Statistics implemented from first principles in [`src/statsx.py`](src/statsx.py) | Every figure and number in the report is reproduced by one command |
-| What a risk score may and may not be used for | Out-of-time validation: AUC with intervals, capture, calibration, a checklist baseline and the data's own ceiling | The ceiling rebuilt from the generator in memory, so the benchmark cannot drift from the data |
+| What a risk score may and may not be used for, written as the AI Act's instructions for use | Out-of-time validation: AUC with intervals, capture, calibration, a checklist baseline and the data's own ceiling | The ceiling rebuilt from the generator in memory, so the benchmark cannot drift from the data |
+| Fairness by sex, age, country and working time, and what an audit cannot see | Calibration by group with the gap in standard errors; catch and false-flag rates at one cut | The model card is generated from the same code, so it cannot quote a stale number |
 
 ---
 
@@ -65,7 +67,7 @@ python3 src/run_all.py
 ```
 
 That regenerates the data, rebuilds the SQLite warehouse, runs the three analyses and the
-out-of-time test, writes 15 charts and assembles [`reports/findings.md`](reports/findings.md) plus a self-contained
+out-of-time test and the fairness audit, writes 16 charts and assembles [`reports/findings.md`](reports/findings.md) plus a self-contained
 [`reports/findings.html`](reports/findings.html) with every chart inlined. It takes a few
 seconds and needs **no packages installed** — Python 3.10 or newer and nothing else.
 
@@ -97,6 +99,8 @@ runs the tests, also with no packages installed.
 │   ├── analysis_pay_gap.py       module 2
 │   ├── analysis_service_desk.py  module 3
 │   ├── analysis_validation.py    module 1b: the attrition model on quarters it never saw
+│   ├── analysis_fairness.py      module 1c: who the model reads right and who it does not
+│   ├── build_model_card.py       docs/model_card.md, from the same numbers
 │   ├── build_report_html.py      findings.md -> one self-contained HTML file
 │   └── run_all.py                the whole pipeline, one command
 ├── sql/                          analysis queries: CTEs, window functions, cross-table joins
@@ -104,7 +108,9 @@ runs the tests, also with no packages installed.
 └── reports/
     ├── findings.md               the written report
     ├── findings.html             the same report as one shareable file
-    └── figures/                  15 SVG charts
+    └── figures/                  16 SVG charts
+docs/
+    └── model_card.md             instructions for use, in the AI Act register's order
 ```
 
 ---
@@ -143,6 +149,20 @@ model built on this data could get.
 Even the best tenth of scores misses most resignations, and most people it flags stay. A score
 like this can decide where a manager's next stay conversation goes, never anything about the
 person scored.
+
+**Is it fair, and may it be used at all?** In the [AI Act register](https://github.com/D0M3N1C0X/ai-act-hr-readiness-kit)
+built for the same organisation, this model is system S07: high-risk, and built in-house, so the
+employer is its provider. Its [model card](docs/model_card.md) answers, as a provider would, the
+questions the register sends every supplier: accuracy, performance by group, oversight, logs,
+explanations, what counts as a significant change. The audit behind it breaks the unseen quarters
+down by sex, age, country and working time. It finds the model's real flaw: country of work is not
+an input, so Germany is over-read (3.6% predicted, 2.2% resigning) and Poland under-read. Fixing it
+is version 1.1, and adding an input is a significant change under the AI Act, so the provider's
+duties have to be in place first. The card also rules out pay, counter-offers, promotion and
+dismissal as uses, and flags the engagement input: an individual survey score breaks the
+confidentiality most surveys promise.
+
+![Predicted against observed resignations, by group](reports/figures/16_fairness_calibration.svg)
 
 ### 2. Pay equity, EU Pay Transparency Directive
 
