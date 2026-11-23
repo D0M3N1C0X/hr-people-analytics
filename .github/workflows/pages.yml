@@ -9,6 +9,8 @@ on:
     # analysis code alone regenerates nothing that is served.
     paths:
       - reports/**
+      - web/**
+      - data/employees.csv
       - .github/workflows/pages.yml
       - site-assets/**
   workflow_dispatch:
@@ -37,6 +39,9 @@ jobs:
           mkdir -p site
           cp reports/findings.html site/index.html
           cp -r reports site/reports
+          mkdir -p site/tool
+          cp -R web/* site/tool/
+          cp data/employees.csv site/tool/sample_employees.csv
 
       - name: Add the link preview
         run: |

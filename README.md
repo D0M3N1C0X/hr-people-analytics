@@ -5,6 +5,8 @@
 
 <p align="center">
   <a href="https://d0m3n1c0x.github.io/hr-people-analytics/"><b>Read the report</b></a> ·
+  <a href="https://d0m3n1c0x.github.io/hr-people-analytics/tool/"><b>Try it on your own file</b></a> ·
+  <a href="docs/model_card.md">Model card</a> ·
   <a href="reports/findings.md">The report in Markdown</a> ·
   <a href="sql/">The SQL layer</a>
 </p>
@@ -57,9 +59,24 @@ equal-value pay ranges and the workforce cost model in this portfolio.
 | Recommendations written for a leadership audience, not a technical one | Statistics implemented from first principles in [`src/statsx.py`](src/statsx.py) | Every figure and number in the report is reproduced by one command |
 | Retention as a workforce-planning curve: how many of a hundred hires are still here after one, two, three years | Survival analysis from scratch: Kaplan-Meier with delayed entry, log-rank, Cox with Breslow ties, a time-varying effect | Cox fitted in one backward pass over the risk sets, tested against the log-rank identity |
 | What a risk score may and may not be used for, written as the AI Act's instructions for use | Out-of-time validation: AUC with intervals, capture, calibration, a checklist baseline and the data's own ceiling | The ceiling rebuilt from the generator in memory, so the benchmark cannot drift from the data |
+| A tool an HR team can run on its own export: teams, never lists of names | The same definitions in JavaScript, checked against Python on 1,530 values in 31 datasets | Runs in the browser on the user's file, nothing uploaded; English and Italian |
 | Fairness by sex, age, country and working time, and what an audit cannot see | Calibration by group with the gap in standard errors; catch and false-flag rates at one cut | The model card is generated from the same code, so it cannot quote a stale number |
 
 ---
+
+## Try it on your own file
+
+**[The retention check](https://d0m3n1c0x.github.io/hr-people-analytics/tool/)** runs the same analysis on
+any HRIS export, in the browser: one row per employee with hire date, leaving date and department is
+enough, and pay, contract and promotion columns add the rest. It gives turnover by department, how
+many hires are still there after one, two and three years (with delayed entry, as above), what goes
+with resigning, warning signs team by team, and the pay gap, and exports them to Excel. Columns are
+matched by name in English, Italian, Polish, German and Spanish.
+
+What it does not do is by design: it never lists people, it hides teams under five, and it reads no
+engagement scores. The file stays on the computer. Its engine, [`web/engine.js`](web/engine.js), is
+checked on every change against [`src/tool_reference.py`](src/tool_reference.py) on this repository's
+data and 30 random files, 1,530 values in all.
 
 ## Run it
 
@@ -80,9 +97,10 @@ runs the SQL layer against `data/hr.db` and prints the results as tables.
 
 ```bash
 python3 -m unittest discover -s tests
+node tests/js/check_engine.mjs
 ```
 
-runs the tests, also with no packages installed.
+run the tests, also with no packages installed: the second checks the browser tool against Python.
 
 ---
 
@@ -103,6 +121,7 @@ runs the tests, also with no packages installed.
 │   ├── analysis_fairness.py      module 1c: who the model reads right and who it does not
 │   ├── analysis_survival.py      module 1d: how long people stay, on tenure time
 │   ├── build_model_card.py       docs/model_card.md, from the same numbers
+│   ├── tool_reference.py         the browser tool's calculations, and the cases it is checked on
 │   ├── build_report_html.py      findings.md -> one self-contained HTML file
 │   └── run_all.py                the whole pipeline, one command
 ├── sql/                          analysis queries: CTEs, window functions, cross-table joins
@@ -113,6 +132,8 @@ runs the tests, also with no packages installed.
     └── figures/                  18 SVG charts
 docs/
     └── model_card.md             instructions for use, in the AI Act register's order
+web/                              the retention check: index.html, app.js, engine.js, shared design
+tests/js/check_engine.mjs         recomputes every Python case in JavaScript
 ```
 
 ---

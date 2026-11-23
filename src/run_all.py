@@ -26,6 +26,7 @@ import analysis_survival
 import analysis_validation
 import build_db
 import build_model_card
+import tool_reference
 import build_report_html
 import generate_data
 from hrlib import ROOT, SNAPSHOT, WINDOW_START
@@ -133,6 +134,7 @@ def main() -> None:
     print(f"     reports/figures/     ({len(figures)} charts)")
     build_report_html.main()
     build_model_card.main()
+    print(f"     tests/fixtures/tool_vectors.json ({tool_reference.write_vectors()} cases for the browser tool)")
     print("\nDone. Open reports/findings.md, or run `python3 src/run_sql.py` for the SQL layer.")
 
 
