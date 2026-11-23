@@ -227,3 +227,73 @@ def dummy_columns(rows: list[dict], column: str, base: str) -> tuple[list[str], 
     """Category levels (excluding the reference level) and their column names."""
     levels = sorted({r[column] for r in rows} - {base})
     return levels, [f"{column}={lvl}" for lvl in levels]
+
+
+# --------------------------------------------------------------------------
+# Scoring a classifier: how well a risk score separates and how honest it is
+# --------------------------------------------------------------------------
+
+def auc(scores: list[float], labels: list[int]) -> float:
+    """Area under the ROC curve: the chance a random leaver outscores a random stayer (ties count half).
+
+    Computed from ranks (the Mann-Whitney U statistic), so it is exact and O(n log n).
+    """
+    pairs = sorted(zip(scores, labels))
+    n1 = sum(labels)
+    n0 = len(labels) - n1
+    if not n1 or not n0:
+        return float("nan")
+    rank_sum, i = 0.0, 0
+    while i < len(pairs):
+        j = i
+        while j < len(pairs) and pairs[j][0] == pairs[i][0]:
+            j += 1
+        mid_rank = (i + 1 + j) / 2                # average rank of the tied block, 1-based
+        rank_sum += mid_rank * sum(lab for _, lab in pairs[i:j])
+        i = j
+    return (rank_sum - n1 * (n1 + 1) / 2) / (n1 * n0)
+
+
+def auc_ci(a: float, n1: int, n0: int, z: float = 1.96) -> tuple[float, float]:
+    """95% interval for an AUC by Hanley and McNeil (1982): wide when leavers are few."""
+    q1, q2 = a / (2 - a), 2 * a * a / (1 + a)
+    se = math.sqrt((a * (1 - a) + (n1 - 1) * (q1 - a * a) + (n0 - 1) * (q2 - a * a)) / (n1 * n0))
+    return max(0.0, a - z * se), min(1.0, a + z * se)
+
+
+def brier(probs: list[float], labels: list[int]) -> float:
+    """Mean squared error of a predicted probability: 0 is perfect, lower is better."""
+    return sum((p - y) ** 2 for p, y in zip(probs, labels)) / len(labels)
+
+
+def calibration_slope(probs: list[float], labels: list[int]) -> tuple[float, float]:
+    """(intercept, slope) of a logit of the outcome on the logit of the prediction.
+
+    A model that is right out of sample has slope 1: below 1 it is overconfident, its
+    high scores too high and its low scores too low, the usual sign of overfitting.
+    """
+    lp = [math.log(max(p, 1e-9) / max(1 - p, 1e-9)) for p in probs]
+    fit = logistic_regression([[1.0, v] for v in lp], labels, ["intercept", "slope"])
+    return fit.coef[0], fit.coef[1]
+
+
+def capture(scores: list[float], labels: list[int], share: float) -> float:
+    """Share of all positives found in the top `share` of scores.
+
+    Where the cut falls inside a group of tied scores, that group is counted pro rata, which is what
+    breaking the tie at random would give on average: a coarse score cannot win by the order of rows.
+    """
+    total = sum(labels)
+    if not total:
+        return float("nan")
+    ranked = sorted(zip(scores, labels), key=lambda t: -t[0])
+    room, found, i = len(ranked) * share, 0.0, 0
+    while i < len(ranked) and room > 0:
+        j = i
+        while j < len(ranked) and ranked[j][0] == ranked[i][0]:
+            j += 1
+        size, hits = j - i, sum(lab for _, lab in ranked[i:j])
+        found += hits * min(1.0, room / size)
+        room -= size
+        i = j
+    return found / total

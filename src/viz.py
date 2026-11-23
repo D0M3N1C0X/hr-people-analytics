@@ -294,3 +294,27 @@ def lollipop_chart(path, labels, values, title, subtitle="", xlabel="",
         body.append(_text((left + right) / 2, H - 34, xlabel, size=12,
                           color=MUTED, anchor="middle"))
     return _save(Path(path), body)
+
+
+def xy_chart(path, series: dict, title, subtitle="", xlabel="", ylabel="",
+             fmt=lambda v: f"{v:.0f}%", xfmt=lambda v: f"{v:.0f}%", dashed: set | None = None) -> Path:
+    """Lines through (x, y) points on two numeric axes from 0 to 100, with a dashed diagonal for chance."""
+    top, bottom, left, right = M["top"], H - M["bottom"], M["left"], W - M["right"]
+    ticks = [0, 20, 40, 60, 80, 100]
+    body = _frame(title, subtitle, ylabel, ticks, fmt)
+    colors = PALETTE[:len(series)]
+    body += _legend(list(series), colors)
+    sx = lambda v: left + v / 100 * (right - left)
+    sy = lambda v: bottom - v / 100 * (bottom - top)
+    body.append(f'<line x1="{sx(0):.1f}" y1="{sy(0):.1f}" x2="{sx(100):.1f}" y2="{sy(100):.1f}" '
+                f'stroke="{SLATE}" stroke-width="1.4" stroke-dasharray="5 5"/>')
+    for j, (name, points) in enumerate(series.items()):
+        d = " ".join(f"{'M' if i == 0 else 'L'}{sx(x):.1f},{sy(y):.1f}" for i, (x, y) in enumerate(points))
+        dash = ' stroke-dasharray="7 5"' if dashed and name in dashed else ""
+        body.append(f'<path d="{d}" fill="none" stroke="{colors[j]}" stroke-width="2.6" '
+                    f'stroke-linejoin="round" stroke-linecap="round"{dash}/>')
+    for t in ticks:
+        body.append(_text(sx(t), bottom + 24, xfmt(t), size=12, color=MUTED, anchor="middle"))
+    if xlabel:
+        body.append(_text((left + right) / 2, bottom + 52, xlabel, size=12, color=MUTED, anchor="middle"))
+    return _save(Path(path), body)

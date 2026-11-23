@@ -71,3 +71,40 @@ class Regression(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ScoringAClassifier(unittest.TestCase):
+    """The validation metrics against values that can be worked out by hand."""
+
+    def test_auc_is_the_mann_whitney_probability(self):
+        scores = [0.1, 0.4, 0.35, 0.8, 0.4, 0.2, 0.9]
+        labels = [0, 0, 1, 1, 1, 0, 1]
+        pos = [s for s, y in zip(scores, labels) if y]
+        neg = [s for s, y in zip(scores, labels) if not y]
+        brute = sum((p > n) + 0.5 * (p == n) for p in pos for n in neg) / (len(pos) * len(neg))
+        self.assertAlmostEqual(statsx.auc(scores, labels), brute)
+        self.assertEqual(statsx.auc([1, 2, 3, 4], [0, 0, 1, 1]), 1.0)
+        self.assertEqual(statsx.auc([1, 2, 3, 4], [1, 1, 0, 0]), 0.0)
+        self.assertEqual(statsx.auc([5, 5, 5, 5], [0, 1, 0, 1]), 0.5)
+
+    def test_hanley_mcneil_interval(self):
+        lo, hi = statsx.auc_ci(0.75, 100, 900)
+        q1, q2 = 0.75 / 1.25, 2 * 0.75 ** 2 / 1.75
+        se = ((0.75 * 0.25 + 99 * (q1 - 0.5625) + 899 * (q2 - 0.5625)) / 90000) ** 0.5
+        self.assertAlmostEqual(lo, 0.75 - 1.96 * se)
+        self.assertAlmostEqual(hi, 0.75 + 1.96 * se)
+
+    def test_brier_and_capture(self):
+        self.assertAlmostEqual(statsx.brier([0.2, 0.9], [0, 1]), (0.04 + 0.01) / 2)
+        scores, labels = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [1, 0, 1, 0, 0, 0, 0, 0, 0, 1]
+        self.assertAlmostEqual(statsx.capture(scores, labels, 0.3), 2 / 3)
+        # a tie straddling the cut is counted pro rata, not by row order
+        self.assertAlmostEqual(statsx.capture([1, 1, 1, 1], [1, 0, 0, 0], 0.5), 0.5)
+
+    def test_a_perfectly_calibrated_score_has_slope_one(self):
+        import random
+        rng = random.Random(7)
+        probs = [rng.uniform(0.02, 0.6) for _ in range(6000)]
+        labels = [int(rng.random() < p) for p in probs]
+        _, slope = statsx.calibration_slope(probs, labels)
+        self.assertAlmostEqual(slope, 1.0, delta=0.12)
