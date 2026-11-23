@@ -68,5 +68,29 @@ class OutOfTimeTest(unittest.TestCase):
         self.assertIn(f"Out of sample, the AUC is {self.r['pooled']['model']['auc']:.2f}", FINDINGS)
 
 
+class ModelCard(unittest.TestCase):
+    """The card answers the register's questions for a high-risk in-house system, with the tested numbers."""
+
+    CARD = (ROOT / "docs" / "model_card.md").read_text(encoding="utf-8")
+
+    def test_it_answers_every_question_the_register_asks_of_s07(self):
+        asked = [f"V{n:02d}" for n in (*range(1, 12), 14, 15, 16)]
+        found = re.findall(r"^## (V\d\d) ·", self.CARD, re.M)
+        self.assertEqual(found, asked)
+
+    def test_the_card_quotes_the_tested_figure(self):
+        m = re.search(r"Out of sample, the AUC is ([\d.]+)", FINDINGS)
+        self.assertIn(f"**{m.group(1)} (", self.CARD)
+
+    def test_pay_and_dismissal_are_ruled_out(self):
+        v01 = self.CARD[self.CARD.index("## V01"):self.CARD.index("## V02")]
+        for use in ("counter-offers", "promotion", "dismissal"):
+            self.assertIn(use, v01)
+
+    def test_the_audit_and_the_card_agree_on_the_widest_miss(self):
+        miss = re.search(r"\*\*The widest miss is (\w+)\*\*", FINDINGS).group(1)
+        self.assertIn(f"**Known issues.** {miss} is over-predicted", self.CARD)
+
+
 if __name__ == "__main__":
     unittest.main()

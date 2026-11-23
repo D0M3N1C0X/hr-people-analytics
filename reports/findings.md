@@ -92,7 +92,36 @@ The odds ratios above come from a model fitted and read on the same people, whic
 
 The pooled row counts person-quarters: most people appear in both unseen quarters, so its interval is a little narrower than truly independent data would give.
 
-**How to read it.** Even the best tenth of scores misses most resignations, and most people it flags stay. A score like this can decide where a manager's next stay conversation goes; it should never decide anything about the person scored.
+**How to read it.** Even the best tenth of scores misses most resignations, and most people it flags stay. A score like this can decide where a manager's next stay conversation goes; it should never decide anything about the person scored. The [model card](../docs/model_card.md) sets out what it may and may not be used for.
+
+
+### Is it fair to the people it scores?
+
+Sex, age and country are not inputs, which proves nothing on its own: a model can learn them back through what it does use, and it can be right on average while wrong for a group. So the scores from the two unseen quarters are broken down by the groups an impact assessment has to look at. Flags use one company-wide cut, the top 10% of scores.
+
+| Group |  | At risk | Resigned | Observed | Predicted | AUC | Flagged | Resigners caught | Stayers flagged |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Sex | women | 3,417 | 127 | 3.7% | 3.7% | 0.74 | 11% | 39% | 10.2% |
+| Sex | men | 3,435 | 98 | 2.9% | 3.4% | 0.77 | 9% | 37% | 8.3% |
+| Age | under 30 | 1,957 | 66 | 3.4% | 4.1% | 0.77 | 12% | 50% | 11.0% |
+| Age | 30-44 | 4,061 | 139 | 3.4% | 3.5% | 0.75 | 10% | 34% | 9.2% |
+| Age | 45 and over | 834 | 20 | 2.4% | 2.8% | 0.74 | 6% | 30% | 5.8% |
+| Country | IT | 2,108 | 72 | 3.4% | 3.6% | 0.77 | 10% | 43% | 9.1% |
+| Country | PL | 2,316 | 92 | 4.0% | 3.5% | 0.73 | 10% | 33% | 8.9% |
+| Country | DE | 1,436 | 32 | 2.2% | 3.6% | 0.81 | 10% | 53% | 9.3% |
+| Country | ES | 992 | 29 | 2.9% | 3.7% | 0.72 | 11% | 28% | 10.2% |
+| Working time | full time | 6,309 | 211 | 3.3% | 3.6% | 0.75 | 10% | 38% | 9.4% |
+| Working time | part time | 543 | 14 | 2.6% | 3.4% | 0.78 | 9% | 36% | 7.9% |
+
+![Calibration by group](figures/16_fairness_calibration.svg)
+
+**The widest miss is Germany** (country): the model predicts **3.6%** a quarter where **2.2%** resign, so it over-reads that group's risk by 62%. Country of work is not an input, and in this data Poland carries a higher exit hazard of its own (4.0% observed against 3.5% predicted): a model that leaves country out spreads Poland's risk across everyone else, and the country with the fewest resignations is over-read. The gap is 2.9 standard errors wide on 32 resignations: not noise. Country of work is not a protected characteristic, and adding it is the first change for the model's next version; it is left as tested above so the published figures stay the ones that were tested.
+
+**Sex.** Women and men are predicted at 3.7% and 3.4% against 3.7% and 2.9% observed; the model catches 39% of resigning women and 37% of resigning men. Of the eight inputs, the one that differs most by sex is *works in customer service* (32% of women, 26% of men): an input to watch, because it can carry sex into the score.
+
+**Age.** The score leans on first-year tenure and fixed-term contracts, which are commoner among younger staff, so younger people are flagged far more often: the lowest flag rate is **52%** of the highest. Whether that is a harm depends entirely on what a flag leads to. A stay conversation offered to more young people is not; fewer promotions or less training for people marked as likely to leave would be.
+
+**What this audit cannot see.** Disability, origin and other characteristics are not in the data, and should not be added to it just to test the model; the impact assessment asks the people concerned and their representatives instead. The groups also overlap: part-time staff are 55% women.
 
 
 ## 2. Pay equity under the EU Pay Transparency Directive
@@ -232,6 +261,12 @@ on the logit of the prediction. The ceiling is the generator's own monthly hazar
 the latent trait the published data leaves out. One limit is specific to synthetic data: pay position,
 engagement and rating are single values per person, so in the test they are as current as they would be
 in a well-kept HRIS. In real data each must be taken as it stood on the scoring date.
+
+**The fairness audit** breaks the two unseen quarters down by sex, age band, country and working time.
+For each group it compares predicted and observed resignations (with the gap in standard errors, from
+the sum of p(1 - p) over the group), the AUC inside the group, and at one company-wide cut, the top 10%
+of scores, how many resigners are caught and how many stayers are flagged. The model card in
+`docs/model_card.md` is generated from the same numbers.
 
 **The pay-gap model** is OLS on log(base salary), so coefficients read as percentage
 differences. Controls are added in blocks - level, then department, then country, tenure and
