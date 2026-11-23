@@ -38,5 +38,35 @@ class Intervention(unittest.TestCase):
         self.assertAlmostEqual(avoided, n * (with_gap - without) / 100, delta=1.0)
 
 
+class OutOfTimeTest(unittest.TestCase):
+    """The validation is run on quarters the model never saw, and the ceiling is the data's own truth."""
+
+    @classmethod
+    def setUpClass(cls):
+        import sys
+        sys.path.insert(0, str(ROOT / "src"))
+        import analysis_validation
+        cls.v = analysis_validation
+        cls.r = analysis_validation.evaluate()
+
+    def test_the_ceiling_is_rebuilt_from_the_same_people(self):
+        import csv
+        _, truth = self.v.ceiling_scores()
+        published = {r["employee_id"]: r["exit_date"] for r in csv.DictReader((ROOT / "data" / "employees.csv").open())}
+        self.assertEqual({k: v["exit_date"] for k, v in truth.items()}, published)
+
+    def test_no_test_quarter_overlaps_the_training_outcome(self):
+        train_end = self.v.add_months(self.v.TRAIN, self.v.HORIZON)
+        self.assertTrue(all(cutoff >= train_end for cutoff in self.v.TESTS))
+
+    def test_the_model_sits_between_the_checklist_and_the_ceiling(self):
+        p = self.r["pooled"]
+        self.assertGreater(p["model"]["auc"], 0.5)
+        self.assertLess(p["model"]["auc"], p["ceiling"]["auc"])
+
+    def test_the_report_quotes_the_out_of_sample_figure(self):
+        self.assertIn(f"Out of sample, the AUC is {self.r['pooled']['model']['auc']:.2f}", FINDINGS)
+
+
 if __name__ == "__main__":
     unittest.main()

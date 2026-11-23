@@ -234,10 +234,27 @@ def make_employees() -> list[dict]:
     return employees
 
 
+def exit_logit(e: dict, tenure_at_month: int, msp: int) -> float:
+    """Monthly log-odds of leaving. The validation module reuses it as the ceiling a model could reach."""
+    return (-6.90
+            + 0.85 * (e["compa_ratio"] < 0.92)
+            + 0.70 * (msp > 24 and e["job_level"] in ("L1", "L2", "L3"))
+            + 1.10 * (e["engagement_score"] <= 45)
+            + 0.55 * (45 < e["engagement_score"] <= 62)
+            + 0.90 * (tenure_at_month < 12)
+            + 0.50 * (e["contract_type"] == "Fixed-term")
+            + 0.45 * (e["department"] == "Customer Service")
+            + 0.25 * (e["work_model"] == "Onsite")
+            + 0.30 * (e["country"] == "PL")
+            + 1.80 * e["_hr_friction"]
+            - 0.30 * (e["performance_rating"] <= 2))
+
+
 def simulate_exits(employees: list[dict]) -> None:
     """Month-by-month exit hazard over the 12-month analysis window."""
     for e in employees:
         hire = date.fromisoformat(e["hire_date"])
+        e["_msp_snapshot"] = e["months_since_promotion"]   # before any exit freezes the clock
 
         for m in range(12):
             month_start = add_months(WINDOW_START, m)
@@ -246,19 +263,7 @@ def simulate_exits(employees: list[dict]) -> None:
 
             tenure_at_month = months_between(hire, month_start)
             msp = max(0, e["months_since_promotion"] - (12 - m))
-
-            logit = (-6.90
-                     + 0.85 * (e["compa_ratio"] < 0.92)
-                     + 0.70 * (msp > 24 and e["job_level"] in ("L1", "L2", "L3"))
-                     + 1.10 * (e["engagement_score"] <= 45)
-                     + 0.55 * (45 < e["engagement_score"] <= 62)
-                     + 0.90 * (tenure_at_month < 12)
-                     + 0.50 * (e["contract_type"] == "Fixed-term")
-                     + 0.45 * (e["department"] == "Customer Service")
-                     + 0.25 * (e["work_model"] == "Onsite")
-                     + 0.30 * (e["country"] == "PL")
-                     + 1.80 * e["_hr_friction"]
-                     - 0.30 * (e["performance_rating"] <= 2))
+            logit = exit_logit(e, tenure_at_month, msp)
 
             if rng.random() < logistic(logit):
                 exit_day = month_start + timedelta(days=rng.randint(0, 27))
@@ -465,7 +470,7 @@ def main() -> None:
     agents = make_agents()
     cases = make_cases(employees, agents)
 
-    write_csv(DATA / "employees.csv", employees, drop=("_hr_friction",))
+    write_csv(DATA / "employees.csv", employees, drop=("_hr_friction", "_msp_snapshot"))
     write_csv(DATA / "hr_cases.csv", cases)
 
     leavers = [e for e in employees if e["exit_date"]]

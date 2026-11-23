@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import analysis_attrition
 import analysis_pay_gap
 import analysis_service_desk
+import analysis_validation
 import build_db
 import build_report_html
 import generate_data
@@ -60,6 +61,15 @@ the outcome measured in the following nine months. Predictors are therefore alwa
 before the exit they predict, and every employee in the sample carries the same exposure.
 Odds ratios describe association, not causation: they rank risk and point at where to look.
 
+**The out-of-time test** refits the same eight terms on the employees at risk on 1 October 2025 with a
+three-month outcome, then scores those at risk on 1 January and 1 April 2026, quarters the model never
+saw, with predictors frozen on the scoring date. AUC intervals follow Hanley and McNeil (1982); capture
+in the top 10% counts tied scores pro rata; the calibration slope is the logit of the outcome regressed
+on the logit of the prediction. The ceiling is the generator's own monthly hazard, rebuilt in memory with
+the latent trait the published data leaves out. One limit is specific to synthetic data: pay position,
+engagement and rating are single values per person, so in the test they are as current as they would be
+in a well-kept HRIS. In real data each must be taken as it stood on the scoring date.
+
 **The pay-gap model** is OLS on log(base salary), so coefficients read as percentage
 differences. Controls are added in blocks - level, then department, then country, tenure and
 contract - to separate a like-for-like pay difference from a structural one. Adjusted gaps
@@ -89,6 +99,7 @@ def main() -> None:
     print("\n3/4  running analyses")
     sections = []
     for name, module in (("attrition & retention", analysis_attrition),
+                         ("out-of-time validation", analysis_validation),
                          ("pay equity", analysis_pay_gap),
                          ("service desk", analysis_service_desk)):
         sections.append(module.run())

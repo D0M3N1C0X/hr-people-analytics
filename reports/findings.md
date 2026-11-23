@@ -67,6 +67,34 @@ At **30% of annual base salary** per replacement - the mid-point of the 20-40% r
 **Illustrative intervention.** 710 active employees (21% of the active population) sit below 0.92 compa-ratio. Bringing them to 0.95 of band costs **EUR 2,603,850** a year. The model puts their chance of resigning within a year at **28.4%** with the gap and **10.3%** without it, everything else held equal; that is roughly **128 fewer resignations** a year, worth about **EUR 1,356,409** in avoided replacement cost - it recovers **52%** of the uplift bill in year one, before the productivity of the people who stay. Read honestly, that says a blanket uplift does not pay for itself: the version worth piloting is the targeted one, taking the below-band population inside Customer Service and the fixed-term cohort, where the odds ratios are highest and the salaries lowest. The estimate comes from an observational model and sizes the prize; it is not a causal guarantee.
 
 
+### Does the model predict? An out-of-time test
+
+The odds ratios above come from a model fitted and read on the same people, which shows what goes with leaving but not whether the model would have warned anyone in time. So it is run here the way an HR team would run it: **fitted once on the quarter starting 1 October 2025**, then **scored at the start of each of the next two quarters**, on people and months it never saw, with every predictor frozen on the day of scoring. The department term is fixed before the test too: Customer Service, the highest exit rate before 1 October.
+
+|  | Quarter | At risk | Resigned | AUC (95% CI) | Caught in top 10% | Brier |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: |
+| Fitted on (in sample) | Oct-Dec 2025 | 3,243 | 109 | 0.77 (0.71-0.82) | 32% | 0.0312 |
+| Unseen quarter | Jan-Mar 2026 | 3,380 | 104 | 0.72 (0.66-0.78) | 35% | 0.0291 |
+| Unseen quarter | Apr-Jun 2026 | 3,472 | 121 | 0.78 (0.73-0.83) | 41% | 0.0322 |
+| Both unseen quarters | Jan-Jun 2026 | 6,852 | 225 | 0.75 (0.72-0.79) | 38% | 0.0307 |
+
+**Out of sample, the AUC is 0.75** against 0.77 in sample: a random resigner outranks a random stayer 75% of the time. Flagging the **top 10% of risk scores catches 38% of the next quarter's resignations**, 3.8 times what picking at random would, and the top 20% catches 54%.
+
+![Resignations caught by share flagged](figures/14_out_of_time_gains.svg)
+
+**Against what HR could do without a model.** Counting the same eight warning signs, unweighted, reaches an AUC of **0.72** and catches **32%** in the top 10%. The weights are worth +0.03 of AUC and +6 points of capture: a real gain, but most of the value is in knowing which signs to watch, not in the arithmetic.
+
+**Against the ceiling.** The generator's own hazard, which knows each person's latent tendency to have HR problems that keep coming back, reaches **0.80** and catches **47%** in the top 10%. No model built on HRIS fields can beat that. The driver model closes **84% of the gap between chance and the ceiling**; the rest sits mostly in a trait the data only sees indirectly, through reopened cases.
+
+![Calibration](figures/15_calibration.svg)
+
+**Calibration.** Across the two unseen quarters the model predicted **3.6%** would resign in a quarter and **3.3%** did. The calibration slope is **0.96**: close to 1, so the probabilities can be read as probabilities, not only as a ranking.
+
+The pooled row counts person-quarters: most people appear in both unseen quarters, so its interval is a little narrower than truly independent data would give.
+
+**How to read it.** Even the best tenth of scores misses most resignations, and most people it flags stay. A score like this can decide where a manager's next stay conversation goes; it should never decide anything about the person scored.
+
+
 ## 2. Pay equity under the EU Pay Transparency Directive
 
 Population: **3,443 active employees**, 50% women / 50% men. At this size - 250 workers or more - the organisation reports **by 7 June 2027 and every year thereafter** (Art. 9(2)), on the preceding calendar year. What follows is computed on a **snapshot of active employees at 30 June 2026**, which is the shape of the exercise rather than a statutory submission. Gaps are expressed with men as the reference, as in the Directive.
@@ -195,6 +223,15 @@ during the year are counted where they actually were.
 the outcome measured in the following nine months. Predictors are therefore always observed
 before the exit they predict, and every employee in the sample carries the same exposure.
 Odds ratios describe association, not causation: they rank risk and point at where to look.
+
+**The out-of-time test** refits the same eight terms on the employees at risk on 1 October 2025 with a
+three-month outcome, then scores those at risk on 1 January and 1 April 2026, quarters the model never
+saw, with predictors frozen on the scoring date. AUC intervals follow Hanley and McNeil (1982); capture
+in the top 10% counts tied scores pro rata; the calibration slope is the logit of the outcome regressed
+on the logit of the prediction. The ceiling is the generator's own monthly hazard, rebuilt in memory with
+the latent trait the published data leaves out. One limit is specific to synthetic data: pay position,
+engagement and rating are single values per person, so in the test they are as current as they would be
+in a well-kept HRIS. In real data each must be taken as it stood on the scoring date.
 
 **The pay-gap model** is OLS on log(base salary), so coefficients read as percentage
 differences. Controls are added in blocks - level, then department, then country, tenure and
