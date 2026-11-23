@@ -92,5 +92,17 @@ class ModelCard(unittest.TestCase):
         self.assertIn(f"**Known issues.** {miss} is over-predicted", self.CARD)
 
 
+class SurvivalFindings(unittest.TestCase):
+    def test_ignoring_late_entry_overstates_survival(self):
+        m = re.search(r"\*\*(\d+)% of hires are still here after a year.*?put the first year at \*\*(\d+)%\*\*", FINDINGS, re.S)
+        self.assertIsNotNone(m)
+        self.assertGreater(int(m.group(2)), int(m.group(1)))
+
+    def test_readme_survival_figures_are_the_report_s(self):
+        for figure in ("77%", "65%", "94%", "22.4 months", "31.3", "3.10"):
+            self.assertIn(figure, README)
+            self.assertIn(figure, FINDINGS)
+
+
 if __name__ == "__main__":
     unittest.main()

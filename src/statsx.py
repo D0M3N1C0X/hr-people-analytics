@@ -297,3 +297,125 @@ def capture(scores: list[float], labels: list[int], share: float) -> float:
         room -= size
         i = j
     return found / total
+
+
+# --------------------------------------------------------------------------
+# Survival: when people leave, not only whether
+# --------------------------------------------------------------------------
+# Each subject is (entry, exit, event): at risk from `entry` (exclusive) to `exit` (inclusive), with
+# event = 1 if the exit is the outcome and 0 if observation simply stopped (censoring). A late `entry`
+# is delayed entry, or left truncation: someone hired years before the data starts only enters the
+# risk set at the tenure they had when observation began. Ignoring it overstates survival.
+
+def kaplan_meier(subjects: list[tuple[float, float, int]]) -> list[tuple[float, float, float, int]]:
+    """Product-limit estimate with delayed entry. Returns (time, survival, Greenwood se, at risk) at each event time."""
+    times = sorted({t for _, t, e in subjects if e})
+    out, s, var_sum = [], 1.0, 0.0
+    for t in times:
+        at_risk = sum(1 for a, b, _ in subjects if a < t <= b)
+        deaths = sum(1 for _, b, e in subjects if e and b == t)
+        if not at_risk:
+            continue
+        s *= 1 - deaths / at_risk
+        if at_risk > deaths:
+            var_sum += deaths / (at_risk * (at_risk - deaths))
+        out.append((t, s, s * math.sqrt(var_sum), at_risk))
+    return out
+
+
+def survival_at(curve: list[tuple[float, float, float, int]], t: float) -> float:
+    s = 1.0
+    for time, surv, _, _ in curve:
+        if time > t:
+            break
+        s = surv
+    return s
+
+
+def restricted_mean(curve: list[tuple[float, float, float, int]], horizon: float) -> float:
+    """Area under the survival curve up to `horizon`: expected time stayed within it."""
+    area, last_t, last_s = 0.0, 0.0, 1.0
+    for t, s, _, _ in curve:
+        if t > horizon:
+            break
+        area += last_s * (t - last_t)
+        last_t, last_s = t, s
+    return area + last_s * (horizon - last_t)
+
+
+def logrank(subjects: list[tuple[float, float, int]], groups: list[int]) -> tuple[float, float]:
+    """Two-group log-rank test (groups coded 0/1). Returns (chi-square, p) on one degree of freedom."""
+    times = sorted({t for _, t, e in subjects if e})
+    o_minus_e, var = 0.0, 0.0
+    for t in times:
+        n = n1 = d = d1 = 0
+        for (a, b, e), g in zip(subjects, groups):
+            if a < t <= b:
+                n += 1
+                n1 += g
+                if e and b == t:
+                    d += 1
+                    d1 += g
+        if n < 2:
+            continue
+        o_minus_e += d1 - d * n1 / n
+        var += d * (n1 / n) * (1 - n1 / n) * (n - d) / (n - 1)
+    chi2 = o_minus_e ** 2 / var if var else float("nan")
+    return chi2, math.erfc(math.sqrt(chi2 / 2)) if chi2 == chi2 else float("nan")
+
+
+def cox(subjects: list[tuple[float, float, int]], X: list[list[float]], names: list[str],
+        max_iter: int = 30, tol: float = 1e-9) -> ModelResult:
+    """Cox proportional hazards by Newton-Raphson on the partial likelihood (Breslow ties, delayed entry).
+
+    Hazard ratios are exp(coef). No intercept: the baseline hazard is left unspecified, which is the point.
+    The risk-set sums are kept running while time is walked backwards, so each iteration is one pass.
+    """
+    n, k = len(subjects), len(names)
+    entry = [a for a, _, _ in subjects]
+    exit_ = [b for _, b, _ in subjects]
+    by_exit = sorted(range(n), key=lambda i: -exit_[i])
+    by_entry = sorted(range(n), key=lambda i: -entry[i])
+    deaths: dict[float, list[int]] = {}
+    for i, (a, b, e) in enumerate(subjects):
+        if e and a < b:
+            deaths.setdefault(b, []).append(i)
+    times = sorted(deaths, reverse=True)
+
+    beta, loglik = [0.0] * k, float("-inf")
+    for _ in range(max_iter):
+        w = [math.exp(sum(b * x for b, x in zip(beta, row))) for row in X]
+        s0, s1, s2 = 0.0, [0.0] * k, [[0.0] * k for _ in range(k)]
+
+        def shift(i: int, sign: float) -> None:
+            nonlocal s0
+            s0 += sign * w[i]
+            for j in range(k):
+                s1[j] += sign * w[i] * X[i][j]
+                for l in range(k):
+                    s2[j][l] += sign * w[i] * X[i][j] * X[i][l]
+
+        score, info, new_ll, pe, pn = [0.0] * k, [[0.0] * k for _ in range(k)], 0.0, 0, 0
+        for t in times:
+            while pe < n and exit_[by_exit[pe]] >= t:       # still in the data at t
+                shift(by_exit[pe], 1.0)
+                pe += 1
+            while pn < n and entry[by_entry[pn]] >= t:      # not yet entered at t
+                shift(by_entry[pn], -1.0)
+                pn += 1
+            ds, d = deaths[t], len(deaths[t])
+            new_ll += sum(math.log(w[i]) for i in ds) - d * math.log(s0)
+            for j in range(k):
+                score[j] += sum(X[i][j] for i in ds) - d * s1[j] / s0
+                for l in range(k):
+                    info[j][l] += d * (s2[j][l] / s0 - s1[j] * s1[l] / s0 ** 2)
+        inv = invert(info)
+        beta = [b + sum(inv[j][l] * score[l] for l in range(k)) for j, b in enumerate(beta)]
+        if abs(new_ll - loglik) < tol:
+            loglik = new_ll
+            break
+        loglik = new_ll
+    se = [math.sqrt(inv[j][j]) for j in range(k)]
+    z = [b / s if s else float("nan") for b, s in zip(beta, se)]
+    return ModelResult(names, beta, se, z, [two_sided_p(v) for v in z], n=n, kind="Cox",
+                       extra={"loglik": loglik, "events": sum(len(v) for v in deaths.values())})
