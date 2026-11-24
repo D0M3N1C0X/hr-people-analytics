@@ -62,6 +62,13 @@ def split_at(subjects, X, at: float):
     return s2, x2
 
 
+def first_year() -> float:
+    """Share of hires still employed after twelve months (voluntary exits, delayed entry): the report's headline."""
+    employees = load_employees()
+    eligible = [e for e in employees if months(e["hire_dt"], e["exit_dt"] or SNAPSHOT) > max(0.0, months(e["hire_dt"], WINDOW_START))]
+    return survival_at(kaplan_meier(subjects_of(eligible)), 12)
+
+
 def run() -> str:
     employees = load_employees()
     eligible = [e for e in employees if months(e["hire_dt"], e["exit_dt"] or SNAPSHOT) > max(0.0, months(e["hire_dt"], WINDOW_START))]

@@ -12,6 +12,16 @@ from the code in this repository
 
 ---
 
+## In one minute
+
+- **Who leaves.** Voluntary turnover is **13.6%**, Customer Service the highest at **16.8%**; of a hundred hires, **77** are still here after a year. Pay below band is the strongest warning sign.
+- **Can it be predicted?** Tested on quarters it never saw, the attrition model reaches an AUC of **0.75** and its top 10% of scores catches **38%** of the next quarter's resignations; most people it flags stay, so it may guide conversations and nothing else.
+- **Is pay fair?** The mean gender pay gap is **15.4%**, **1.6%** like for like: most of it is who holds the senior jobs.
+- **Does HR service work?** **76.4%** of cases meet their SLA against a 90% target, and it breaks at the January peak.
+
+[Try it on your own file](https://d0m3n1c0x.github.io/hr-people-analytics/tool/) · [Model card](https://github.com/D0M3N1C0X/hr-people-analytics/blob/main/docs/model_card.md) · [The workbook](https://github.com/D0M3N1C0X/hr-people-analytics/blob/main/deliverables/people_analytics.xlsx) · [The code](https://github.com/D0M3N1C0X/hr-people-analytics)
+
+---
 ## 1. Attrition & retention
 
 **Headline.** Average headcount over the window is **3,364**. Voluntary turnover is **13.6%** (457 exits); total turnover, including dismissals and end-of-contract, is **16.6%**. **110** voluntary leavers - **24%** of them - held a performance rating of 4 or 5, so a quarter of the loss sits in the population you least want to lose.

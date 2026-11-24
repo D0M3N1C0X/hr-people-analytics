@@ -113,6 +113,8 @@ const i18n = createI18n(T, "en");
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 let table = null, mapping = {}, result = null, rows = [];
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reveal = (id) => $(id).scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
 
 function message(id, text) { const el = $(id); el.textContent = text || ""; el.classList.toggle("is-shown", !!text); }
 
@@ -134,7 +136,7 @@ async function load(file) {
     if (d && d > latest) latest = d;
   }
   if (latest) $("periodo").value = iso(latest).slice(0, 7);
-  $("colonne").scrollIntoView({ behavior: "smooth", block: "start" });
+  reveal("colonne");
 }
 
 function drawMapping() {
@@ -173,7 +175,7 @@ function run() {
   result = analyse(rows, periodEnd);
   draw();
   $("risultati").style.display = "block";
-  $("risultati").scrollIntoView({ behavior: "smooth", block: "start" });
+  reveal("risultati");
 }
 
 const pct = (x, d = 1) => (x == null ? "–" : i18n.percent(x, d));

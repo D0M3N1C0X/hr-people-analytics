@@ -32,6 +32,43 @@ import generate_data
 from hrlib import ROOT, SNAPSHOT, WINDOW_START
 
 REPORT = ROOT / "reports" / "findings.md"
+SITE = "https://d0m3n1c0x.github.io/hr-people-analytics"
+REPO = "https://github.com/D0M3N1C0X/hr-people-analytics"
+
+
+def summary() -> str:
+    """The answers first: one line per question, every figure computed by the modules below."""
+    from hrlib import group_by, load_cases, load_employees, turnover_rate
+
+    employees = load_employees()
+    rates = {d: turnover_rate(rows) for d, rows in group_by(employees, "department").items()}
+    worst = max(rates, key=rates.get)
+    pooled = analysis_validation.evaluate()["pooled"]["model"]
+    active = [e for e in employees if e["active"]]
+    adjusted = analysis_pay_gap.nested_models(active)[-1][1]
+    cases = load_cases()
+    sla = sum(c["sla_met"] for c in cases) / len(cases)
+    lines = [
+        "## In one minute",
+        "",
+        f"- **Who leaves.** Voluntary turnover is **{turnover_rate(employees):.1f}%**, {worst} the highest at "
+        f"**{rates[worst]:.1f}%**; of a hundred hires, **{100 * analysis_survival.first_year():.0f}** are still here after a "
+        "year. Pay below band is the strongest warning sign.",
+        f"- **Can it be predicted?** Tested on quarters it never saw, the attrition model reaches an AUC of "
+        f"**{pooled['auc']:.2f}** and its top 10% of scores catches **{pooled['top10']:.0%}** of the next quarter's "
+        "resignations; most people it flags stay, so it may guide conversations and nothing else.",
+        f"- **Is pay fair?** The mean gender pay gap is **{analysis_pay_gap.raw_gap(active):.1f}%**, "
+        f"**{adjusted:.1f}%** like for like: most of it is who holds the senior jobs.",
+        f"- **Does HR service work?** **{sla:.1%}** of cases meet their SLA against a 90% target, and it breaks at "
+        "the January peak.",
+        "",
+        f"[Try it on your own file]({SITE}/tool/) · [Model card]({REPO}/blob/main/docs/model_card.md) · "
+        f"[The workbook]({REPO}/blob/main/deliverables/people_analytics.xlsx) · [The code]({REPO})",
+        "",
+        "---",
+        "",
+    ]
+    return "\n".join(lines)
 
 HEADER = f"""# People Analytics - findings
 
@@ -127,7 +164,7 @@ def main() -> None:
     print("\n4/4  writing the report")
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     body = "\n\n".join(section.rstrip() + "\n" for section in sections)
-    REPORT.write_text(HEADER + body + FOOTER, encoding="utf-8")
+    REPORT.write_text(HEADER + summary() + body + FOOTER, encoding="utf-8")
 
     figures = sorted((ROOT / "reports" / "figures").glob("*.svg"))
     print(f"     reports/findings.md  ({REPORT.stat().st_size / 1024:.0f} KB)")

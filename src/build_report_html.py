@@ -2,7 +2,7 @@
 Render reports/findings.md as a single self-contained HTML report.
 
 The Markdown report is the source of truth; this turns it into something a
-reader can open in a browser, with all 13 charts inlined as SVG so the file
+reader can open in a browser, with every chart inlined as SVG so the file
 travels on its own - no image folder, no network, no build step.
 
     python3 src/build_report_html.py                     -> reports/findings.html
@@ -55,8 +55,8 @@ body{
   font-size:17px; line-height:1.68; -webkit-font-smoothing:antialiased;
 }
 .page{padding:clamp(1.25rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem}
-.doc{display:grid; gap:1.5rem; justify-items:center}
-.doc > *{width:100%; max-width:42rem; margin:0}
+.doc{display:grid; grid-template-columns:minmax(0,1fr); gap:1.5rem; justify-items:center}
+.doc > *{width:100%; max-width:42rem; margin:0; min-width:0}   /* wide charts scroll in their plate, not the page */
 .doc > figure, .doc > .table-wrap{max-width:57rem}
 
 h1,h2,h3{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; text-wrap:balance; margin:0}
