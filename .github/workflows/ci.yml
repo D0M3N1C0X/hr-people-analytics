@@ -33,7 +33,7 @@ jobs:
 
       - name: Check the outputs are reproducible from the seed
         run: |
-          git diff --exit-code --stat -- data reports docs tests/fixtures \
+          git diff --exit-code --stat -- data reports docs \
             || (echo "::error::Regenerating changed a committed output - the pipeline is not deterministic" && exit 1)
 
       - name: Publish the report and charts as a build artifact

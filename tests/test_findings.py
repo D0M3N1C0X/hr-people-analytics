@@ -104,5 +104,47 @@ class SurvivalFindings(unittest.TestCase):
             self.assertIn(figure, FINDINGS)
 
 
+class ToolVectors(unittest.TestCase):
+    """The committed cases the browser tool is checked on are what the Python reference computes today.
+
+    Compared within 1e-9, not byte for byte: the last digit of an exp or a log differs between platforms.
+    """
+
+    def test_the_vectors_are_current(self):
+        import json
+        import sys
+        from datetime import date
+        sys.path.insert(0, str(ROOT / "src"))
+        import tool_reference as ref
+
+        committed = json.loads((ROOT / "tests" / "fixtures" / "tool_vectors.json").read_text(encoding="utf-8"))
+
+        def close(a, b, path):
+            if isinstance(b, dict):
+                self.assertEqual(set(a), set(b), path)
+                for k in b:
+                    close(a[k], b[k], f"{path}.{k}")
+            elif isinstance(b, list):
+                self.assertEqual(len(a), len(b), path)
+                for i, (x, y) in enumerate(zip(a, b)):
+                    close(x, y, f"{path}[{i}]")
+            elif isinstance(b, float):
+                self.assertAlmostEqual(a, b, delta=1e-9 * max(1.0, abs(b)), msg=path)
+            else:
+                self.assertEqual(a, b, path)
+
+        for case in committed["cases"]:
+            if "source" in case:
+                rows = ref.canonical_from_repo()
+            else:
+                f = case["rows"]["fields"]
+                rows = [dict(zip(f, vals)) for vals in case["rows"]["values"]]
+                for r in rows:
+                    for k in ("hire", "exit"):
+                        r[k] = date.fromisoformat(r[k]) if r.get(k) else None
+            fresh = json.loads(json.dumps(ref.analyse(rows, date.fromisoformat(case["period_end"]))))
+            close(fresh, case["result"], case["name"])
+
+
 if __name__ == "__main__":
     unittest.main()
