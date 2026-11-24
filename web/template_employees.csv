@@ -1,0 +1,4 @@
+employee_id,hire_date,exit_date,exit_type,department,gender,base_salary,salary_band_mid,months_since_promotion,contract_type,work_model
+E001,2021-03-01,,,Customer Service,F,28400,30000,18,Permanent,Hybrid
+E002,2025-09-15,2026-02-27,Voluntary,Sales,M,31000,30500,5,Fixed-term,Onsite
+E003,2019-06-03,2025-11-30,Involuntary,Finance,F,45200,44000,40,Permanent,Remote
