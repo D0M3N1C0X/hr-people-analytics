@@ -7,6 +7,7 @@
   <a href="https://d0m3n1c0x.github.io/hr-people-analytics/"><b>Read the report</b></a> ·
   <a href="https://d0m3n1c0x.github.io/hr-people-analytics/tool/"><b>Try it on your own file</b></a> ·
   <a href="docs/model_card.md">Model card</a> ·
+  <a href="deliverables/people_analytics.xlsx">The workbook</a> ·
   <a href="reports/findings.md">The report in Markdown</a> ·
   <a href="sql/">The SQL layer</a>
 </p>
@@ -59,6 +60,7 @@ equal-value pay ranges and the workforce cost model in this portfolio.
 | Recommendations written for a leadership audience, not a technical one | Statistics implemented from first principles in [`src/statsx.py`](src/statsx.py) | Every figure and number in the report is reproduced by one command |
 | Retention as a workforce-planning curve: how many of a hundred hires are still here after one, two, three years | Survival analysis from scratch: Kaplan-Meier with delayed entry, log-rank, Cox with Breslow ties, a time-varying effect | Cox fitted in one backward pass over the risk sets, tested against the log-rank identity |
 | What a risk score may and may not be used for, written as the AI Act's instructions for use | Out-of-time validation: AUC with intervals, capture, calibration, a checklist baseline and the data's own ceiling | The ceiling rebuilt from the generator in memory, so the benchmark cannot drift from the data |
+| The core figures as an Excel workbook an HR team can audit cell by cell | Turnover, warning signs and the Article 9 and 10 pay figures as live formulas | 121 figures reconciled with Python through [excel-twin](https://github.com/D0M3N1C0X/excel-twin), recalculated by LibreOffice in CI |
 | A tool an HR team can run on its own export: teams, never lists of names | The same definitions in JavaScript, checked against Python on 1,530 values in 31 datasets | Runs in the browser on the user's file, nothing uploaded; English and Italian |
 | Fairness by sex, age, country and working time, and what an audit cannot see | Calibration by group with the gap in standard errors; catch and false-flag rates at one cut | The model card is generated from the same code, so it cannot quote a stale number |
 
@@ -77,6 +79,24 @@ What it does not do is by design: it never lists people, it hides teams under fi
 engagement scores. The file stays on the computer. Its engine, [`web/engine.js`](web/engine.js), is
 checked on every change against [`src/tool_reference.py`](src/tool_reference.py) on this repository's
 data and 30 random files, 1,530 values in all.
+
+## The workbook
+
+[`deliverables/people_analytics.xlsx`](deliverables/people_analytics.xlsx) holds the report's core figures
+as live formulas over the 4,000 employee rows, for anyone who would rather audit a number by clicking on
+it: voluntary turnover by department from twelve month-end headcounts, the warning signs the attrition
+model is built on (who had each, who resigned), the Article 9 pay-gap items and the 36 department x level
+categories with the Article 10 rules. Its Reconciliation sheet sets each of 121 figures against the value
+Python computed, and CI recalculates the file with LibreOffice and fails if one disagrees, through
+[excel-twin](https://github.com/D0M3N1C0X/excel-twin), the same check the rest of the portfolio uses.
+
+The pipeline stays standard-library only; the workbook's builder is the one place with packages:
+
+```bash
+pip install -r tools/requirements.txt
+python3 tools/build_workbook.py
+excel-twin recalc deliverables/people_analytics.xlsx build/ && excel-twin check build/people_analytics.xlsx
+```
 
 ## Run it
 
@@ -134,6 +154,8 @@ docs/
     └── model_card.md             instructions for use, in the AI Act register's order
 web/                              the retention check: index.html, app.js, engine.js, shared design
 tests/js/check_engine.mjs         recomputes every Python case in JavaScript
+tools/build_workbook.py           the Excel twin (openpyxl and excel-twin: the only packages, and only here)
+deliverables/people_analytics.xlsx  121 figures as formulas, reconciled with Python
 ```
 
 ---
