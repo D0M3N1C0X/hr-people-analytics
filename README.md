@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="site-assets/cover-dark.png">
-  <img alt="Why people leave, and what it costs: 3.53 times the odds of resigning below 0.92 compa-ratio, 13.6% voluntary turnover, 76.4% SLA attainment against a 90% target." src="site-assets/cover-light.png">
+  <img alt="Why people leave, and whether a model may say who: AUC 0.75 on quarters the model never saw, 77 of 100 hires still here after a year, 121 figures reconciled between Python and Excel." src="site-assets/cover-light.png">
 </picture>
 
 <p align="center">
